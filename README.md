@@ -10,3 +10,9 @@
 - [ ] look for how to show users pdf or excel files
 - [ ] make sure that uploading will be at client side not on server
 - [ ] make it shareable if user wants
+
+# Things made in 14/03/2025
+
+- mock data finished.
+- started on ui (still need lots of work)
+- app deployed.
