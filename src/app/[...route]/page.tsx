@@ -62,10 +62,11 @@ async function OurList({ route }: { route: string }) {
 export default async function PhotoPage({
   params,
 }: {
-  params: { route?: string[] };
+  params: Promise<{ route: string[] }>;
 }) {
+  const param = await params;
   // Handle the root route case (/folder)
-  if (!params?.route) {
+  if (!param.route) {
     return (
       <div className="mt-20 flex flex-wrap justify-center gap-4">
         <OurList route="" />
@@ -73,7 +74,7 @@ export default async function PhotoPage({
     );
   }
 
-  const routePath = params.route.join("/");
+  const routePath = param.route.join("/");
 
   return (
     <div className="mt-20 flex flex-wrap justify-center gap-4">
