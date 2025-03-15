@@ -1,17 +1,9 @@
-import { SignedIn, SignedOut } from "@clerk/nextjs";
-import {
-  type Files,
-  mockFiles,
-  Folders,
-  folders,
-} from "./_components/mockdata";
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
+import { SignedOut, SignedIn } from "@clerk/nextjs";
 
 export default function HomePage() {
-  const folder: Folders = folders;
-  const files: Files = mockFiles;
   return (
     <main className="bg-gradient-to- flex min-h-screen flex-col items-center justify-center text-white">
       <SignedOut>
