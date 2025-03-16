@@ -7,7 +7,6 @@ import {
 } from "~/app/_components/mockdata";
 
 async function OurList({ route }: { route: string }) {
-  console.log("Route received:", route); // Better logging
   const folder: Folders = folders;
   const files: Files = mockFiles;
 
@@ -30,8 +29,6 @@ async function OurList({ route }: { route: string }) {
   // Make sure route starts with / if your mock data expects that format
   const normalizedRoute = route.startsWith("/") ? route : `/${route}`;
 
-  console.log("Looking for folder with route:", normalizedRoute);
-
   const folderWeWant = folder.find(
     (folder) => folder.route === normalizedRoute,
   ) ?? {
@@ -40,8 +37,6 @@ async function OurList({ route }: { route: string }) {
     parentId: 0,
     route: "/route",
   };
-
-  console.log("Found folder:", folderWeWant);
 
   const filesWeUse = files.filter((file) => file.folderId === folderWeWant.id);
   const foldersWeUse = folders.filter(
