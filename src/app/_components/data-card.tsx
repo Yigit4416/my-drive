@@ -100,7 +100,7 @@ function DataSheet({ name, size }: { name: string; size: number }) {
                 <DialogTitle>Are you absolutely sure?</DialogTitle>
                 <DialogDescription>
                   This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
+                  your file/folder and remove your data from our servers.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter className="mt-4">
