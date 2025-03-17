@@ -21,6 +21,7 @@ async function OurList({ route }: { route: string }) {
         name={item.name}
         route={item.route}
         type={item.type}
+        size={item.size}
         key={item.id}
       />
     ));
@@ -29,6 +30,7 @@ async function OurList({ route }: { route: string }) {
   // Make sure route starts with / if your mock data expects that format
   const normalizedRoute = route.startsWith("/") ? route : `/${route}`;
 
+  // Gets parent folder
   const folderWeWant = folder.find(
     (folder) => folder.route === normalizedRoute,
   ) ?? {
@@ -38,17 +40,20 @@ async function OurList({ route }: { route: string }) {
     route: "/route",
   };
 
+  // Gets childs and than merge them
   const filesWeUse = files.filter((file) => file.folderId === folderWeWant.id);
   const foldersWeUse = folders.filter(
     (folder) => folder.parentId === folderWeWant.id,
   );
   const everything = [...filesWeUse, ...foldersWeUse];
 
+  // Prints childs
   return everything.map((item) => (
     <DataCard
       name={item.name}
       route={item.route}
       type={item.type}
+      size={item.size}
       key={item.id}
     />
   ));

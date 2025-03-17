@@ -6,7 +6,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import Link from "next/link";
-import { NavBar } from "../[...route]/navbar";
+import { NavBar } from "./navbar";
 
 export default function TopNav() {
   return (

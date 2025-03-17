@@ -4,6 +4,7 @@ export type Folders = {
   route: string;
   parentId: number;
   type: string;
+  size: number;
 }[];
 
 export type Files = {
@@ -12,6 +13,7 @@ export type Files = {
   type: string;
   folderId: number;
   route: string;
+  size: number;
 }[];
 
 export const folders: Folders = [
@@ -21,6 +23,7 @@ export const folders: Folders = [
     route: "root",
     parentId: 0,
     type: "folder",
+    size: 25,
   },
   {
     id: 2,
@@ -28,6 +31,7 @@ export const folders: Folders = [
     route: "/root/file_1",
     parentId: 1,
     type: "folder",
+    size: 10,
   },
   {
     id: 3,
@@ -35,6 +39,7 @@ export const folders: Folders = [
     route: "/root/file_2",
     parentId: 1,
     type: "folder",
+    size: 10,
   },
   {
     id: 4,
@@ -42,6 +47,7 @@ export const folders: Folders = [
     route: "/root/file_1/file_3",
     parentId: 2,
     type: "folder",
+    size: 5,
   },
   {
     id: 5,
@@ -49,6 +55,7 @@ export const folders: Folders = [
     route: "/root/file_2/file_4",
     parentId: 3,
     type: "folder",
+    size: 5,
   },
 ];
 
@@ -59,6 +66,7 @@ export const mockFiles: Files = [
     type: "pdf",
     folderId: 1,
     route: "Dont't forget to add their folders route to this route",
+    size: 5,
   },
   {
     id: 2,
@@ -66,6 +74,7 @@ export const mockFiles: Files = [
     type: "png",
     folderId: 2,
     route: "Dont't forget to add their folders route to this route",
+    size: 5,
   },
   {
     id: 3,
@@ -73,6 +82,7 @@ export const mockFiles: Files = [
     type: "pdf",
     folderId: 3,
     route: "Dont't forget to add their folders route to this route",
+    size: 5,
   },
   {
     id: 4,
@@ -80,6 +90,7 @@ export const mockFiles: Files = [
     type: "pdf",
     folderId: 4,
     route: "Dont't forget to add their folders route to this route",
+    size: 5,
   },
   {
     id: 5,
@@ -87,5 +98,6 @@ export const mockFiles: Files = [
     type: "pdf",
     folderId: 5,
     route: "Dont't forget to add their folders route to this route",
+    size: 5,
   },
 ];
