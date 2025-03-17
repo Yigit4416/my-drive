@@ -6,6 +6,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogFooter,
+  DialogClose,
 } from "~/components/ui/dialog";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
@@ -18,6 +19,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { Copy } from "lucide-react";
+import { Input } from "~/components/ui/input";
+import CopyButton from "./copybutton";
+import { Toaster } from "sonner";
 
 function DocumentSVG() {
   return (
@@ -79,39 +85,107 @@ function FolderSVG() {
 function DataSheet({ name, size }: { name: string; size: number }) {
   // Make other 2 button also sheet
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button>More Info</Button>
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>File name: {name}</SheetTitle>
-          <SheetDescription>File/Folder size: {size} mb</SheetDescription>
-        </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <Button>Rename</Button>
-          <Button className="bg-blue-600">Share</Button>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="destructive">Delete</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your file/folder and remove your data from our servers.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="mt-4">
-                <Button variant="outline">Cancel</Button>
+    <>
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button>More Info</Button>
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>File name: {name}</SheetTitle>
+            <SheetDescription>File/Folder size: {size} mb</SheetDescription>
+          </SheetHeader>
+          <div className="grid gap-4 py-4">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>Rename</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Rename file</DialogTitle>
+                  <DialogDescription>
+                    Enter a new name for this file/folder.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Name</Label>
+                    <Input placeholder={name} />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <DialogClose asChild>
+                    <Button>Save changes</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="secondary"
+                  className="bg-blue-500 text-white hover:bg-blue-400"
+                >
+                  Share
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Share link</DialogTitle>
+                  <DialogDescription>
+                    Anyone who has this link will be able to view this.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex items-center space-x-2">
+                  <div className="grid flex-1 gap-2">
+                    <Label className="sr-only">Link</Label>
+                    <Input
+                      id="link"
+                      defaultValue="https://ui.shadcn.com/docs/installation"
+                      readOnly
+                    />
+                  </div>
+                  <CopyButton link="for now this is not functioning properly" />
+                </div>
+                <DialogFooter className="sm:justify-start">
+                  <DialogClose asChild>
+                    <Button type="button" variant="secondary">
+                      Close
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog>
+              <DialogTrigger asChild>
                 <Button variant="destructive">Delete</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </SheetContent>
-    </Sheet>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your file/folder and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="mt-4">
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button variant="destructive">Delete</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </SheetContent>
+      </Sheet>
+      <Toaster richColors />
+    </>
   );
 }
 

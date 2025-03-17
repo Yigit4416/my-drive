@@ -11,3 +11,7 @@
 - [ ] make sure that uploading will be at client side not on server
 - [ ] make it shareable if user wants
 - [ ] if elements on breadcrumb more than 4 show other elements in "..." dropdown element
+
+## NOTES
+
+- Copy button doesn't functioning propperly (after connecting with S3 this will be contain link we want)
