@@ -7,6 +7,7 @@ import {
 } from "@clerk/nextjs";
 import Link from "next/link";
 import { NavBar } from "./navbar";
+import AddButton from "./addbutton";
 
 export default function TopNav() {
   return (
@@ -19,6 +20,7 @@ export default function TopNav() {
       </div>
       <div className="flex flex-row items-center gap-4">
         <SignedIn>
+          <AddButton />
           <UserButton />
         </SignedIn>
         <SignedOut>

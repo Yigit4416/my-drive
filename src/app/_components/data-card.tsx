@@ -20,7 +20,6 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { Copy } from "lucide-react";
 import { Input } from "~/components/ui/input";
 import CopyButton from "./copybutton";
 import { Toaster } from "sonner";
@@ -83,7 +82,7 @@ function FolderSVG() {
 }
 
 function DataSheet({ name, size }: { name: string; size: number }) {
-  // Make other 2 button also sheet
+  // Make a right click menu
   return (
     <>
       <Sheet>

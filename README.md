@@ -3,8 +3,8 @@
 - [x] deploy
 - [x] make basic UI with mock data
 - [x] setup auth
-- [ ] test UI with hardcoded things
 - [ ] make db schema
+- [ ] test UI with hardcoded things
 - [ ] setup S3
 - [ ] put some files to S3 and test UI
 - [ ] look for how to show users pdf or excel files
@@ -15,3 +15,4 @@
 ## NOTES
 
 - Copy button doesn't functioning propperly (after connecting with S3 this will be contain link we want)
+- drawer.tsx might give error because DialogTitle.
