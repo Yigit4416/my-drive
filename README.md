@@ -16,6 +16,8 @@
 
 ## NOTES
 
+- DONT FORGET TO GET ENV
+
 - Copy button doesn't functioning propperly (after connecting with S3 this will be contain link we want)
 - drawer.tsx might give error because DialogTitle.
 - Rather than breadcrumb you can use side bar with scroll area so you don't have to worry about size of route
