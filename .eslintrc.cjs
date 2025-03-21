@@ -1,4 +1,5 @@
-/** @type {import("eslint").Linter.Config} */
+// Remove the type annotation that's causing problems
+// /** @type {import("eslint").Linter.Config} */
 const config = {
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -58,4 +59,5 @@ const config = {
     ]
   }
 }
+
 module.exports = config;
