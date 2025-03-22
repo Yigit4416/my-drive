@@ -26,6 +26,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import FileFolderAdder from "./filefolderadder";
+import { createFolder } from "~/server/queries";
 
 type Status = {
   value: string;
@@ -141,17 +142,23 @@ export default function AddButton() {
                 {selectedStatus ? (
                   <>{selectedStatus.label}</>
                 ) : (
-                  <>+ Set status</>
+                  <>Folder or File</>
                 )}
               </Button>
             </DrawerTrigger>
             <DrawerContent>
-              <div className="mt-4 border-t">
-                <StatusList
-                  setOpen={setOpen}
-                  setSelectedStatus={setSelectedStatus}
-                />
-              </div>
+              <form
+                action={async () => {
+
+                }}
+              >
+                <div className="mt-4 border-t">
+                  <StatusList
+                    setOpen={setOpen}
+                    setSelectedStatus={setSelectedStatus}
+                  />
+                </div>
+              </form>
             </DrawerContent>
           </Drawer>
         </DialogContent>

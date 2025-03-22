@@ -19,7 +19,7 @@ export default function RootLayout({
     <ClerkProvider>
       <SpeedInsights />
       <html lang="en" className={`${GeistSans.variable}`}>
-        <body>
+        <body className="relative z-0">
           <div className="grid h-full grid-rows-[auto,1fr]">
             <TopNav />
             <main className="">{children}</main>

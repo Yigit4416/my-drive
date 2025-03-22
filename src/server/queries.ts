@@ -1,5 +1,4 @@
 import "server-only";
-import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
 import { files, folders } from "./db/schema";
 
@@ -68,21 +67,17 @@ export async function createFile({ name, type, folderId, route, size }: Files) {
 }
 
 type Folders = {
-  id: number;
   name: string;
   route: string;
   parentId: number;
   type: string;
-  size: number;
 };
 
 export async function createFolder({
-  id,
   name,
   type,
   parentId,
   route,
-  size,
 }: Folders) {
   /* 
   const user = await auth();
@@ -91,12 +86,10 @@ export async function createFolder({
   const result = await db
     .insert(folders)
     .values({
-      id: id,
       name: name,
-      route: type,
+      route: route,
       parentId: parentId,
-      type: route,
-      size: size,
+      type: type,
     })
     .returning();
   if (!result) throw new Error("Couldn't insert");
