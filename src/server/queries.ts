@@ -95,3 +95,10 @@ export async function createFolder({
   if (!result) throw new Error("Couldn't insert");
   return result;
 }
+
+export async function yeniDeneme() {
+  const result: string = deneme()
+  return(
+    result
+  )
+}

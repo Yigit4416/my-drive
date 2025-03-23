@@ -26,7 +26,6 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import FileFolderAdder from "./filefolderadder";
-import { createFolder } from "~/server/queries";
 
 type Status = {
   value: string;
@@ -81,8 +80,8 @@ export default function AddButton() {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
-  const handleAdd = async () => {
-    console.log("You pressed add butotn");
+  const handleAdd = () => {
+    console.log("You pressed add button");
   };
   // Complete later
   // Use a switch here if user selects file make a drag & drop

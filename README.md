@@ -6,6 +6,7 @@
 - [x] make db schema
 - [x] make queries
 - [x] can't press AddButton component when it is in [...route]/layout.tsx.
+- [ ] make sure that only certain files can be uploaded.
 - [ ] test UI with hardcoded things
 - [ ] after testing add schema and queries userId
 - [ ] setup S3
