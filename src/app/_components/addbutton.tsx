@@ -92,7 +92,7 @@ export default function AddButton() {
       <>
         <Dialog>
           <DialogTrigger asChild>
-            <Button onClick={handleAdd} variant={"outline"}>
+            <Button onClick={handleAdd}>
               <Plus />
             </Button>
           </DialogTrigger>
@@ -138,7 +138,7 @@ export default function AddButton() {
           </DialogHeader>
           <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-              <Button variant="outline" className="w-[150px] justify-start">
+              <Button className="w-[150px] justify-start">
                 {selectedStatus ? (
                   <>{selectedStatus.label}</>
                 ) : (

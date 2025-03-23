@@ -5,7 +5,7 @@
 - [x] setup auth
 - [x] make db schema
 - [x] make queries
-- [ ] can't press AddButton component when it is in [...route]/layout.tsx.
+- [x] can't press AddButton component when it is in [...route]/layout.tsx.
 - [ ] test UI with hardcoded things
 - [ ] after testing add schema and queries userId
 - [ ] setup S3
