@@ -80,9 +80,6 @@ export default function AddButton() {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
-  const handleAdd = () => {
-    console.log("You pressed add button");
-  };
   // Complete later
   // Use a switch here if user selects file make a drag & drop
   // if they want folder just make them wirte folder
@@ -91,7 +88,7 @@ export default function AddButton() {
       <>
         <Dialog>
           <DialogTrigger asChild>
-            <Button onClick={handleAdd}>
+            <Button>
               <Plus />
             </Button>
           </DialogTrigger>
@@ -127,7 +124,7 @@ export default function AddButton() {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button onClick={handleAdd} variant={"outline"}>
+          <Button variant={"outline"}>
             <Plus />
           </Button>
         </DialogTrigger>
@@ -146,11 +143,7 @@ export default function AddButton() {
               </Button>
             </DrawerTrigger>
             <DrawerContent>
-              <form
-                action={async () => {
-
-                }}
-              >
+              <form>
                 <div className="mt-4 border-t">
                   <StatusList
                     setOpen={setOpen}

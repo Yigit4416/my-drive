@@ -1,28 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { generateSignedUrl } from "~/server/s3";
-
-function UploadSVG() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.5"
-      stroke="currentColor"
-      className="size-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15"
-      />
-    </svg>
-  );
-}
+import { UploadSVG } from "../_allSVG/svgfuncs";
 
 type Status = {
   value: string;
@@ -49,23 +32,24 @@ export default function FileFolderAdder({
       console.error("No file selected");
       return;
     }
-    const formData = new FormData(e.currentTarget);
-    const file = formData.get("file") as File;
+    const computeSHA256 = async (file: File) => {
+      const buffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+      return hashHex;
+    };
+    const checksum = await computeSHA256(selectedFile);
 
-    console.log("Form data:", formData);
-    console.log("File: ", file);
-
-    if (file) {
-      console.log("File name:", file.name);
-      console.log("File size:", file.size);
-      console.log("File type:", file.type);
-    }
     try {
       const signedUrlResult = await generateSignedUrl({
         fileName: selectedFile.name,
         contentType: selectedFile.type,
+        size: selectedFile.size,
+        checksum: checksum,
       });
       console.log("Signed URL:", signedUrlResult);
+      toast.info("Uploading file...");
       fetch(signedUrlResult.success.url, {
         method: "PUT",
         body: selectedFile,
@@ -76,16 +60,18 @@ export default function FileFolderAdder({
         .then((response) => {
           if (!response.ok) {
             console.error("Failed to upload file:", response);
+            toast.error("Failed to upload file");
             return;
           }
           console.log("File uploaded successfully");
+          toast.success("File uploaded successfully");
         })
         .catch((error) => {
           console.error("Error uploading file:", error);
         });
     } catch (error) {
       console.error("Error getting signed URL:", error);
-      return;
+      toast.error("File is larger than 5MB");
     }
   };
 
@@ -112,6 +98,7 @@ export default function FileFolderAdder({
             <input
               type="file"
               name="file"
+              accept="image/jpeg, image/png, application/pdf, image/gif, video/mp4, video/webm"
               className="hidden"
               onChange={handleFileChange}
             />
