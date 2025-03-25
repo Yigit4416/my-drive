@@ -38,20 +38,23 @@ export async function getFiles(folderId: number) {
 type Files = {
   name: string;
   type: string;
-  folderId: number;
+  folder: string;
   route: string;
   size: number;
 };
 
-export async function createFile({ name, type, folderId, route, size }: Files) {
+export async function createFile({ name, type, folder, route, size }: Files) {
   const user = await auth();
   if(!user.userId) throw new Error("Unauthhorized")
+
+  const folderId = await getFolderId(folder)
+  if(!folderId) throw new Error("Couldn't find folder")
     const result = await db
     .insert(files)
     .values({
       name: name,
       type: type,
-      folderId: folderId,
+      folderId: folderId.id,
       route: route,
       size: size,
     })

@@ -6,8 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { generateSignedUrl } from "~/server/s3";
 import { UploadSVG } from "../_allSVG/svgfuncs";
-import { createFolder } from "~/server/queries";
-import { serverCreateFolder } from "../[...route]/servertoclient";
+import { serverCreateFile, serverCreateFolder } from "../[...route]/servertoclient";
 
 type Status = {
   value: string;
@@ -37,24 +36,22 @@ export default function FileFolderAdder({
       toast.error("Please enter a folder name");
       return;
     }
-    console.log(typeof ourRoute);
-    console.log(Array.isArray(ourRoute));
     const routeString = ourRoute.join("/");
-    console.log("Route:", routeString);
     const folderName = inputElement.value;
     const sanitizedFolderName = sanitizeInput(folderName);
-    console.log("Folder name:", sanitizedFolderName);
     const routeToSave = routeString + "/" + sanitizedFolderName;
-    console.log(`routeToSave: ${routeToSave}`);
     let parentRoute = ourRoute.at(-1);
     if (parentRoute === undefined || parentRoute === "") parentRoute = "root";
-    console.log(`parentRoute: ${parentRoute}`);
     const result = serverCreateFolder({
       name: folderName,
       route: routeToSave,
       parentRoute: parentRoute,
       type: "folder",
     })
+    if(!result) {
+      toast.error("Something went wrong")
+      return;
+    }
     return result;
   };
 
@@ -91,7 +88,7 @@ export default function FileFolderAdder({
           "Content-Type": selectedFile.type,
         },
       })
-        .then((response) => {
+        .then(async (response) => {
           if (!response.ok) {
             console.error("Failed to upload file:", response);
             toast.error("Failed to upload file");
@@ -99,6 +96,15 @@ export default function FileFolderAdder({
           }
           console.log("File uploaded successfully");
           toast.success("File uploaded successfully");
+          const result = await serverCreateFile({
+            name: selectedFile.name,
+            type: selectedFile.type,
+            size: selectedFile.size,
+            route: "https://s3.us-east-1.amazonaws.com/ojrd.yigit-44-dont.have.money.dont.touch/" + signedUrlResult.success.fileName,
+            folder: ourRoute.at(-1) ?? "root"
+          });
+          toast.success("File added to db")
+          return result;
         })
         .catch((error) => {
           console.error("Error uploading file:", error);

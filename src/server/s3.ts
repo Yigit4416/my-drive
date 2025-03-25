@@ -62,9 +62,11 @@ export async function generateSignedUrl({
     return [...array].map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
+  const newFileName = generateFileName()
+
   const putObjectCommand = new PutObjectCommand({
     Bucket: bucketName,
-    Key: generateFileName() + fileName,
+    Key: newFileName,
     ChecksumSHA256: checksum,
     ContentType: contentType,
     Metadata: {
@@ -76,5 +78,5 @@ export async function generateSignedUrl({
   // You have 60 seconds to upload the file
   const signedUrl = await getSignedUrl(s3, putObjectCommand, { expiresIn: 60 });
 
-  return { success: { url: signedUrl } };
+  return { success: { url: signedUrl, fileName: newFileName } };
 }

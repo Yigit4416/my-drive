@@ -11,7 +11,7 @@
 - [x] setup S3
 - [x] for folder submit the route comes from other file shows up as string. Handle that
 - [x] make query for add folder
-- [ ] make query for adding file info
+- [x] make query for adding file info
 - [ ] after testing add schema and queries userId
 - [ ] make sure that all works with UI
 - [ ] put some files to S3 and test UI
