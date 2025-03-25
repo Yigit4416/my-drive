@@ -6,6 +6,8 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { generateSignedUrl } from "~/server/s3";
 import { UploadSVG } from "../_allSVG/svgfuncs";
+import { createFolder } from "~/server/queries";
+import { serverCreateFolder } from "../[...route]/servertoclient";
 
 type Status = {
   value: string;
@@ -14,8 +16,10 @@ type Status = {
 
 export default function FileFolderAdder({
   isFolder,
+  ourRoute,
 }: {
   isFolder: Status | null;
+  ourRoute: Array<string>;
 }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -24,6 +28,34 @@ export default function FileFolderAdder({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setSelectedFile(file);
+  };
+
+  const handleFolderSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const inputElement = e.currentTarget[0] as HTMLInputElement;
+    if (!inputElement?.value) {
+      toast.error("Please enter a folder name");
+      return;
+    }
+    console.log(typeof ourRoute);
+    console.log(Array.isArray(ourRoute));
+    const routeString = ourRoute.join("/");
+    console.log("Route:", routeString);
+    const folderName = inputElement.value;
+    const sanitizedFolderName = sanitizeInput(folderName);
+    console.log("Folder name:", sanitizedFolderName);
+    const routeToSave = routeString + "/" + sanitizedFolderName;
+    console.log(`routeToSave: ${routeToSave}`);
+    let parentRoute = ourRoute.at(-1);
+    if (parentRoute === undefined || parentRoute === "") parentRoute = "root";
+    console.log(`parentRoute: ${parentRoute}`);
+    const result = serverCreateFolder({
+      name: folderName,
+      route: routeToSave,
+      parentRoute: parentRoute,
+      type: "folder",
+    })
+    return result;
   };
 
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,7 +68,9 @@ export default function FileFolderAdder({
       const buffer = await file.arrayBuffer();
       const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+      const hashHex = hashArray
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
       return hashHex;
     };
     const checksum = await computeSHA256(selectedFile);
@@ -78,8 +112,8 @@ export default function FileFolderAdder({
   if (isFolder.value === "folder") {
     return (
       <div className="mt-4">
-        <form className="flex flex-col gap-4">
-          <Input placeholder={`Enter ${isFolder.value} name`} />
+        <form className="flex flex-col gap-4" onSubmit={handleFolderSubmit}>
+          <Input placeholder={`Enter ${isFolder.value} name`} name="value" />
           <Button type="submit">Add {isFolder.label}</Button>
         </form>
       </div>
@@ -115,4 +149,12 @@ export default function FileFolderAdder({
       </div>
     );
   }
+}
+
+function sanitizeInput(input: string): string {
+  if (input.includes("/")) {
+    throw new Error("Invalid input: '/' is not allowed.");
+  }
+
+  return input.toLowerCase().replace(/\s+/g, "_");
 }

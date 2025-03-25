@@ -1,15 +1,18 @@
 import AddButton from "../_components/addbutton";
 
-export default function RouteLayout({
+export default async function RouteLayout({
   children,
+  params
 }: {
   children: React.ReactNode;
+  params: Promise<{ route: string[] }>;
 }) {
+  const { route } = await params;
   return (
     <section className="relative h-full">
       {children}
       <div className="fixed bottom-4 right-4 z-10">
-        <AddButton />
+        <AddButton ourRoutes={route} />
       </div>
     </section>
   );

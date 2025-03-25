@@ -7,10 +7,13 @@
 - [x] make queries
 - [x] can't press AddButton component when it is in [...route]/layout.tsx.
 - [x] make sure that only certain files can be uploaded.
-- [ ] need to make sure that all objects are unique name so just bcrypt name of it it will become unique
-- [ ] test UI with hardcoded things
+- [x] need to make sure that all objects are unique name so just bcrypt name of it it will become unique
+- [x] setup S3
+- [x] for folder submit the route comes from other file shows up as string. Handle that
+- [x] make query for add folder
+- [ ] make query for adding file info
 - [ ] after testing add schema and queries userId
-- [ ] setup S3
+- [ ] make sure that all works with UI
 - [ ] put some files to S3 and test UI
 - [ ] look for how to show users pdf or excel files
 - [ ] make sure that uploading will be at client side not on server

@@ -56,9 +56,15 @@ export async function generateSignedUrl({
     throw new Error("File size is too large");
   }
 
+  const generateFileName = (byte = 32) => {
+    const array = new Uint8Array(byte);
+    crypto.getRandomValues(array);
+    return [...array].map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
   const putObjectCommand = new PutObjectCommand({
     Bucket: bucketName,
-    Key: fileName,
+    Key: generateFileName() + fileName,
     ChecksumSHA256: checksum,
     ContentType: contentType,
     Metadata: {

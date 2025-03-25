@@ -57,6 +57,14 @@ export const folders: Folders = [
     type: "folder",
     size: 5,
   },
+  {
+    id: 6,
+    name: "File 5",
+    route: "/root/file_1/file_3/File 5",
+    parentId: 4,
+    type: "folder",
+    size: 5,
+  }
 ];
 
 export const mockFiles: Files = [
@@ -100,4 +108,12 @@ export const mockFiles: Files = [
     route: "Dont't forget to add their folders route to this route",
     size: 5,
   },
+  {
+    id: 6,
+    name: "mpypdf6.pdf",
+    type: "pdf",
+    folderId: 6,
+    route: "Dont't forget to add their folders route to this route",
+    size: 5,
+  }
 ];
