@@ -100,7 +100,7 @@ export default function FileFolderAdder({
             name: selectedFile.name,
             type: selectedFile.type,
             size: selectedFile.size,
-            route: "https://s3.us-east-1.amazonaws.com/ojrd.yigit-44-dont.have.money.dont.touch/" + signedUrlResult.success.fileName,
+            route: "",
             folder: ourRoute.at(-1) ?? "root"
           });
           toast.success("File added to db")

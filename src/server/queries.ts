@@ -57,6 +57,7 @@ export async function createFile({ name, type, folder, route, size }: Files) {
       folderId: folderId.id,
       route: route,
       size: size,
+      userId: user.userId,
     })
     .returning();
 
@@ -90,6 +91,7 @@ export async function createFolder({
       route: route,
       parentId: realParentId,
       type: type,
+      userId: user.userId,
     })
     .returning();
   if (!result) throw new Error("Couldn't insert");

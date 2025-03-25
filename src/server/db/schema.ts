@@ -47,9 +47,11 @@ export const folders = createTable(
     parentId: integer("parent_id"),
     type: varchar("type", { length: 50 }).notNull(),
     size: integer("size").default(0).notNull(),
+    userId: varchar("userId", {length: 250}).notNull(),
   },
   (table) => {
     return {
+      userIdIndex: index("folders_user_id_ndx").on(table.userId),
       idIndex: index("folders_id_idx").on(table.id),
       parentIdIndex: index("folders_parent_id_idx").on(table.parentId),
     };
@@ -67,9 +69,11 @@ export const files = createTable(
       .notNull(),
     route: text("route").notNull(),
     size: integer("size").default(0).notNull(),
+    userId: varchar("userId", {length: 250}).notNull(),
   },
   (table) => {
     return {
+      userIdIndex: index("files_user_id_ndx").on(table.userId),
       idIndex: index("files_id_idx").on(table.id),
       folderIdIndex: index("files_folder_id_idx").on(table.folderId),
     };
