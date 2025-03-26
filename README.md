@@ -12,13 +12,17 @@
 - [x] for folder submit the route comes from other file shows up as string. Handle that
 - [x] make query for add folder
 - [x] make query for adding file info
-- [ ] after testing add schema and queries userId
-- [ ] make sure that all works with UI
-- [ ] put some files to S3 and test UI
+- [x] deleted bucket create a new one and pull that from .env to db pushing part
+- [x] after testing add schema and queries userId
+- [x] make sure that all works with UI
+- [x] put some files to S3 and test UI
 - [ ] look for how to show users pdf or excel files
 - [x] make sure that uploading will be at client side not on server
 - [ ] make it shareable if user wants
 - [ ] if elements on breadcrumb more than 4 show other elements in "..." dropdown element
+
+## IMPORTANT
+INSTALL NVM AND PNPM USING NPM
 
 ## NOTES
 

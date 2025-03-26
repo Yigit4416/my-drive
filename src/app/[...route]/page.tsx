@@ -1,22 +1,34 @@
+"use server";
+import { auth } from "@clerk/nextjs/server";
 import DataCard from "~/app/_components/data-card";
 import {
-  type Folders,
-  folders,
-  type Files,
-  mockFiles,
-} from "~/app/_components/mockdata";
+  getChildFolders,
+  getFiles,
+  getFolderIdWithRoute,
+  getFolders,
+} from "~/server/queries";
 
-async function OurList({ route }: { route: string }) {
-  const folder: Folders = folders;
-  const files: Files = mockFiles;
-
-  // Add a condition for root route
-  if (!route || route === "") {
-    const rootFolders = folders.filter((folder) => folder.parentId === 0);
-    const rootFiles = files.filter((file) => file.folderId === 0);
-    const rootItems = [...rootFiles, ...rootFolders];
-
-    return rootItems.map((item) => (
+async function OurList({
+  route,
+  routeList,
+}: {
+  route: string;
+  routeList: string[];
+}) {
+  const normalizedRoute = route.startsWith("/") ? route : `/${route}`;
+  const user = await auth();
+  if (!user.userId) {
+    return <div>GO LOGIN YOU BASTARD</div>;
+  }
+  const routeLength = routeList.length;
+  const latestRoute = routeList[routeLength - 1];
+  if (latestRoute === undefined || latestRoute === "") {
+    const parentFolderId = await getFolderIdWithRoute({
+      route: "root",
+      userId: user.userId,
+    });
+    const childFolders = await getChildFolders(parentFolderId.id);
+    return childFolders.map((item) => (
       <DataCard
         name={item.name}
         route={item.route}
@@ -26,29 +38,14 @@ async function OurList({ route }: { route: string }) {
       />
     ));
   }
-
-  // Make sure route starts with / if your mock data expects that format
-  const normalizedRoute = route.startsWith("/") ? route : `/${route}`;
-
-  // Gets parent folder
-  const folderWeWant = folder.find(
-    (folder) => folder.route === normalizedRoute,
-  ) ?? {
-    id: 1,
-    name: "route",
-    parentId: 0,
-    route: "/route",
-  };
-
-  // Gets childs and than merge them
-  const filesWeUse = files.filter((file) => file.folderId === folderWeWant.id);
-  const foldersWeUse = folders.filter(
-    (folder) => folder.parentId === folderWeWant.id,
-  );
-  const everything = [...filesWeUse, ...foldersWeUse];
-
-  // Prints childs
-  return everything.map((item) => (
+  const parentFolderId = await getFolderIdWithRoute({
+    route: normalizedRoute,
+    userId: user.userId,
+  });
+  const childFolders = await getChildFolders(parentFolderId.id);
+  const childFiles = await getFiles(parentFolderId.id);
+  const allItems = [...childFiles, ...childFolders];
+  return allItems.map((item) => (
     <DataCard
       name={item.name}
       route={item.route}
@@ -69,7 +66,7 @@ export default async function PhotoPage({
   if (!param.route) {
     return (
       <div className="mt-20 flex flex-wrap justify-center gap-4">
-        <OurList route="" />
+        <OurList route="/root" routeList={["root"]} />
       </div>
     );
   }
@@ -78,7 +75,7 @@ export default async function PhotoPage({
 
   return (
     <div className="mt-20 flex flex-wrap justify-center gap-4">
-      <OurList route={routePath} />
+      <OurList route={routePath} routeList={param.route} />
     </div>
   );
 }

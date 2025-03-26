@@ -43,8 +43,8 @@ export default function DataCard({
             <Link href={route}>
               <CardHeader>
                 {type === "folder" && <FolderSVG />}
-                {type === "pdf" && <DocumentSVG />}
-                {type === "png" && <ImageSVG />}
+                {type.includes("application") && <DocumentSVG />}
+                {type.includes("image") && <ImageSVG />}
               </CardHeader>
             </Link>
             <CardContent>

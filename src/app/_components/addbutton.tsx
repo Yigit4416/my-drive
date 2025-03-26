@@ -76,9 +76,8 @@ function StatusList({
   );
 }
 
-export default function AddButton({...ourRoutes}) {
-  console.log(ourRoutes.ourRoutes);
-  const allRoutes = ourRoutes.ourRoutes
+export default function AddButton({ ...ourRoutes }) {
+  const allRoutes = ourRoutes.ourRoutes;
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
@@ -115,7 +114,10 @@ export default function AddButton({...ourRoutes}) {
                 />
               </PopoverContent>
             </Popover>
-            <FileFolderAdder isFolder={selectedStatus} ourRoute={ourRoutes.ourRoutes} />
+            <FileFolderAdder
+              isFolder={selectedStatus}
+              ourRoute={ourRoutes.ourRoutes}
+            />
           </DialogContent>
         </Dialog>
       </>
@@ -145,15 +147,18 @@ export default function AddButton({...ourRoutes}) {
               </Button>
             </DrawerTrigger>
             <DrawerContent>
-                <div className="mt-4 border-t">
-                  <StatusList
-                    setOpen={setOpen}
-                    setSelectedStatus={setSelectedStatus}
-                  />
-                </div>
+              <div className="mt-4 border-t">
+                <StatusList
+                  setOpen={setOpen}
+                  setSelectedStatus={setSelectedStatus}
+                />
+              </div>
             </DrawerContent>
           </Drawer>
-          <FileFolderAdder isFolder={selectedStatus} ourRoute={ourRoutes.ourRoutes} />
+          <FileFolderAdder
+            isFolder={selectedStatus}
+            ourRoute={ourRoutes.ourRoutes}
+          />
         </DialogContent>
       </Dialog>
     </>

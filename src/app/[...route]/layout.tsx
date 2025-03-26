@@ -2,7 +2,7 @@ import AddButton from "../_components/addbutton";
 
 export default async function RouteLayout({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
   params: Promise<{ route: string[] }>;

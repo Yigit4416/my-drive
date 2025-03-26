@@ -5,21 +5,24 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function getFolders(id: number) {
   //Make sure that userId is walid and check with queries
-  /* 
   const user = await auth();
-  if(!user.userId) throw new Error("Unauthhorized")
-  */
+  if (!user.userId) throw new Error("Unauthhorized");
+
   const result = await db.query.folders.findFirst({
-    where: (model, { eq }) => eq(model.id, id),
+    where: (model, { eq, and }) =>
+      and(eq(model.id, id), eq(model.userId, user.userId)),
   });
+
   if (!result) throw new Error("Couldn't find file");
+  return result;
 }
 
 export async function getChildFolders(parentId: number) {
-    const user = await auth();
-    if(!user.userId) throw new Error("Unauthhorized")
+  const user = await auth();
+  if (!user.userId) throw new Error("Unauthhorized");
   const result = await db.query.folders.findMany({
-    where: (model, { eq }) => eq(model.parentId, parentId),
+    where: (model, { eq, and }) =>
+      and(eq(model.parentId, parentId), eq(model.userId, user.userId)),
   });
   if (!result) throw new Error("There is no folder");
   return result;
@@ -27,7 +30,7 @@ export async function getChildFolders(parentId: number) {
 
 export async function getFiles(folderId: number) {
   const user = await auth();
-  if(!user.userId) throw new Error("Unauthhorized")
+  if (!user.userId) throw new Error("Unauthhorized");
   const result = db.query.files.findMany({
     where: (model, { eq }) => eq(model.folderId, folderId),
   });
@@ -45,11 +48,16 @@ type Files = {
 
 export async function createFile({ name, type, folder, route, size }: Files) {
   const user = await auth();
-  if(!user.userId) throw new Error("Unauthhorized")
+  if (!user.userId) throw new Error("Unauthhorized");
 
-  const folderId = await getFolderId(folder)
-  if(!folderId) throw new Error("Couldn't find folder")
-    const result = await db
+  console.log(`this is our folder: ${folder}`);
+
+  const folderId = await getFolderIdWithRoute({
+    route: folder,
+    userId: user.userId,
+  });
+  if (!folderId) throw new Error("Couldn't find folder");
+  const result = await db
     .insert(files)
     .values({
       name: name,
@@ -79,9 +87,11 @@ export async function createFolder({
   route,
 }: Folders) {
   const user = await auth();
-  if(!user.userId) throw new Error("Unauthhorized")
-  console.log(parentRoute)
-  const parentId = getFolderId(parentRoute);
+  if (!user.userId) throw new Error("Unauthhorized");
+  const parentId = getFolderIdWithRoute({
+    route: parentRoute,
+    userId: user.userId,
+  });
   if (!parentId) throw new Error("Couldn't find parent folder");
   const realParentId = (await parentId).id;
   const result = await db
@@ -98,12 +108,19 @@ export async function createFolder({
   return result;
 }
 
-export async function getFolderId(route: string) {
-  console.log(route)
+export async function getFolderIdWithRoute({
+  route,
+  userId,
+}: {
+  route: string;
+  userId: string;
+}) {
+  console.info(route);
+  if (route === "/root") userId = "foreveryone";
   const result = await db.query.folders.findFirst({
-    where: (model, { eq }) => eq(model.name, route),
+    where: (model, { eq, and }) =>
+      and(eq(model.route, route), eq(model.userId, userId)),
   });
-  console.log(result)
   if (!result) throw new Error("Couldn't find folder");
   return result;
 }

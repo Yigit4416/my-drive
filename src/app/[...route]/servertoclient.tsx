@@ -1,5 +1,6 @@
 "use server";
 
+import { env } from "~/env";
 import { createFile, createFolder } from "~/server/queries";
 
 type Folders = {
@@ -34,7 +35,7 @@ type Files = {
   name: string;
   type: string;
   folder: string;
-  route: string;
+  insiderName: string;
   size: number;
 };
 
@@ -42,17 +43,20 @@ export async function serverCreateFile({
   name,
   type,
   folder,
-  route,
+  insiderName,
   size,
 }: Files) {
   try {
+    const bucketName = env.BUCKET_NAME;
+    const location = env.BUCKET_REGION;
     const result = await createFile({
       name: name,
       type: type,
       folder: folder,
-      route: route,
+      route: `https://${bucketName}.s3.${location}.amazonaws.com/${insiderName}`,
       size: size,
     });
+    console.info(insiderName);
     return result;
   } catch (error) {
     console.error(error);

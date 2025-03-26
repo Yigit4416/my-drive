@@ -6,7 +6,10 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { generateSignedUrl } from "~/server/s3";
 import { UploadSVG } from "../_allSVG/svgfuncs";
-import { serverCreateFile, serverCreateFolder } from "../[...route]/servertoclient";
+import {
+  serverCreateFile,
+  serverCreateFolder,
+} from "../[...route]/servertoclient";
 
 type Status = {
   value: string;
@@ -36,23 +39,29 @@ export default function FileFolderAdder({
       toast.error("Please enter a folder name");
       return;
     }
-    const routeString = ourRoute.join("/");
+    let routeString = ourRoute.join("/");
+    routeString = "/" + routeString;
     const folderName = inputElement.value;
     const sanitizedFolderName = sanitizeInput(folderName);
     const routeToSave = routeString + "/" + sanitizedFolderName;
     let parentRoute = ourRoute.at(-1);
     if (parentRoute === undefined || parentRoute === "") parentRoute = "root";
-    const result = serverCreateFolder({
-      name: folderName,
-      route: routeToSave,
-      parentRoute: parentRoute,
-      type: "folder",
-    })
-    if(!result) {
-      toast.error("Something went wrong")
-      return;
+    try {
+      const result = serverCreateFolder({
+        name: folderName,
+        route: routeToSave,
+        parentRoute: routeString,
+        type: "folder",
+      });
+      if (!result) {
+        toast.error("Something went wrong");
+        return;
+      }
+      toast.success("Folder added");
+      return result;
+    } catch (error) {
+      console.error(error);
     }
-    return result;
   };
 
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -79,7 +88,6 @@ export default function FileFolderAdder({
         size: selectedFile.size,
         checksum: checksum,
       });
-      console.log("Signed URL:", signedUrlResult);
       toast.info("Uploading file...");
       fetch(signedUrlResult.success.url, {
         method: "PUT",
@@ -94,16 +102,17 @@ export default function FileFolderAdder({
             toast.error("Failed to upload file");
             return;
           }
-          console.log("File uploaded successfully");
           toast.success("File uploaded successfully");
+          let routeString = ourRoute.join("/");
+          routeString = "/" + routeString;
           const result = await serverCreateFile({
             name: selectedFile.name,
             type: selectedFile.type,
             size: selectedFile.size,
-            route: "",
-            folder: ourRoute.at(-1) ?? "root"
+            insiderName: signedUrlResult.success.fileName,
+            folder: routeString ?? "root",
           });
-          toast.success("File added to db")
+          toast.success("File added to db");
           return result;
         })
         .catch((error) => {
