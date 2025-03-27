@@ -46,12 +46,18 @@ export default function DataCard({
                 {type.includes("application") && <DocumentSVG />}
                 {type.includes("image") && <ImageSVG />}
               </CardHeader>
+              <CardContent>
+                <div className="group relative flex flex-col">
+                  <div className="mb-2 truncate font-bold">{name}</div>
+                  {/* Tooltip with pointer */}
+                  <div className="invisible absolute -bottom-12 left-1/2 z-10 min-w-[150px] max-w-[200px] -translate-x-1/2 transform whitespace-normal break-words rounded-md bg-gray-800 p-2 text-center text-sm text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:visible group-hover:opacity-100">
+                    {name}
+                    {/* Pointer triangle */}
+                    <div className="absolute -top-2 left-1/2 h-0 w-0 -translate-x-1/2 transform border-b-8 border-l-8 border-r-8 border-b-gray-800 border-l-transparent border-r-transparent"></div>
+                  </div>
+                </div>
+              </CardContent>
             </Link>
-            <CardContent>
-              <div className="flex flex-col">
-                <div className="mb-2 font-bold">{name}</div>
-              </div>
-            </CardContent>
           </Card>
         </ContextMenuTrigger>
         <ContextMenuContent>

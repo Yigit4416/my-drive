@@ -16,13 +16,12 @@
 - [x] after testing add schema and queries userId
 - [x] make sure that all works with UI
 - [x] put some files to S3 and test UI
+- [x] take a look at buttons it creates hydration errors
+- [x] fix card behaviour
 - [ ] look for how to show users pdf or excel files
 - [x] make sure that uploading will be at client side not on server
 - [ ] make it shareable if user wants
 - [ ] if elements on breadcrumb more than 4 show other elements in "..." dropdown element
-
-## IMPORTANT
-INSTALL NVM AND PNPM USING NPM
 
 ## NOTES
 

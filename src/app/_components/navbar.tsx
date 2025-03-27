@@ -9,19 +9,26 @@ import {
 } from "~/components/ui/breadcrumb";
 
 import { usePathname } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
+import Link from "next/link";
 
 export function NavBar() {
   const pathname = usePathname();
+  const [pathSegments, setPathSegments] = useState<string[]>([]);
 
-  const pathSegments = pathname.split("/").filter((segment) => segment);
+  // Only update path segments after initial render to ensure client/server match
+  useEffect(() => {
+    setPathSegments(pathname.split("/").filter((segment) => segment));
+  }, [pathname]);
 
   return (
     <div className="mt-0.5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            <Link href="/" passHref legacyBehavior>
+              <BreadcrumbLink>Home</BreadcrumbLink>
+            </Link>
           </BreadcrumbItem>
 
           {pathSegments.map((segment, index) => {
@@ -30,7 +37,9 @@ export function NavBar() {
               <Fragment key={href}>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={href}>{segment}</BreadcrumbLink>
+                  <Link href={href} passHref legacyBehavior>
+                    <BreadcrumbLink>{segment}</BreadcrumbLink>
+                  </Link>
                 </BreadcrumbItem>
               </Fragment>
             );
