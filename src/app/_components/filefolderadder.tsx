@@ -10,6 +10,7 @@ import {
   serverCreateFile,
   serverCreateFolder,
 } from "../[...route]/servertoclient";
+import { useRouter } from "next/navigation"; // Changed from next/router to next/navigation
 
 type Status = {
   value: string;
@@ -24,6 +25,7 @@ export default function FileFolderAdder({
   ourRoute: Array<string>;
 }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const router = useRouter(); // Initialize the router
 
   if (isFolder === null) return null;
 
@@ -47,7 +49,7 @@ export default function FileFolderAdder({
     let parentRoute = ourRoute.at(-1);
     if (parentRoute === undefined || parentRoute === "") parentRoute = "root";
     try {
-      const result = serverCreateFolder({
+      const result = await serverCreateFolder({
         name: folderName,
         route: routeToSave,
         parentRoute: routeString,
@@ -58,6 +60,13 @@ export default function FileFolderAdder({
         return;
       }
       toast.success("Folder added");
+
+      // Refresh the current page to show the new folder
+      router.refresh();
+
+      // Reset the form
+      inputElement.value = "";
+
       return result;
     } catch (error) {
       console.error(error);
@@ -113,6 +122,13 @@ export default function FileFolderAdder({
             folder: routeString ?? "root",
           });
           toast.success("File added to db");
+
+          // Refresh the current page to show the new file
+          router.refresh();
+
+          // Reset the file selection
+          setSelectedFile(null);
+
           return result;
         })
         .catch((error) => {
@@ -159,7 +175,9 @@ export default function FileFolderAdder({
               <p>File Type: {selectedFile.type || "Unknown"}</p>
             </div>
           )}
-          <Button type="submit">Add {isFolder.label}</Button>
+          <Button type="submit" disabled={!selectedFile}>
+            Add {isFolder.label}
+          </Button>
         </form>
       </div>
     );
