@@ -1,3 +1,5 @@
+"use server";
+
 import {
   Dialog,
   DialogTrigger,
@@ -23,13 +25,16 @@ import {
 import { TrashIcon } from "lucide-react";
 import { Toaster } from "~/components/ui/sonner";
 import { FolderSVG, DocumentSVG, ImageSVG } from "../_allSVG/svgfuncs";
+import DeleteContext from "../_deletecontextfile/deletecontext";
 
-export default function DataCard({
+export default async function DataCard({
+  itemId,
   name,
   type,
   route,
   size,
 }: {
+  itemId: number;
   name: string;
   type: string;
   route: string;
@@ -49,10 +54,8 @@ export default function DataCard({
               <CardContent>
                 <div className="group relative flex flex-col">
                   <div className="mb-2 truncate font-bold">{name}</div>
-                  {/* Tooltip with pointer */}
                   <div className="invisible absolute -bottom-12 left-1/2 z-10 min-w-[150px] max-w-[200px] -translate-x-1/2 transform whitespace-normal break-words rounded-md bg-gray-800 p-2 text-center text-sm text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:visible group-hover:opacity-100">
                     {name}
-                    {/* Pointer triangle */}
                     <div className="absolute -top-2 left-1/2 h-0 w-0 -translate-x-1/2 transform border-b-8 border-l-8 border-r-8 border-b-gray-800 border-l-transparent border-r-transparent"></div>
                   </div>
                 </div>
@@ -66,7 +69,7 @@ export default function DataCard({
             <RenameContext name={name} />
           </ContextMenuItem>
           <ContextMenuItem asChild>
-            <DeleteContext />
+            <DeleteContext itemId={itemId} type={type} />
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
@@ -75,32 +78,6 @@ export default function DataCard({
   );
 }
 
-function DeleteContext() {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-red-600 hover:bg-red-50">
-          <TrashIcon className="h-4 w-4" /> Delete
-        </button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            file/folder and remove your data from our servers.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="mt-4">
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <Button variant="destructive">Delete</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
 function RenameContext({ name }: { name: string }) {
   return (
     <Dialog>

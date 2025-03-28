@@ -30,6 +30,7 @@ async function OurList({
     const childFolders = await getChildFolders(parentFolderId.id);
     return childFolders.map((item) => (
       <DataCard
+        itemId={item.id}
         name={item.name}
         route={item.route}
         type={item.type}
@@ -47,6 +48,7 @@ async function OurList({
   const allItems = [...childFiles, ...childFolders];
   return allItems.map((item) => (
     <DataCard
+      itemId={item.id}
       name={item.name}
       route={item.route}
       type={item.type}

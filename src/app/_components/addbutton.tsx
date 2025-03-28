@@ -81,9 +81,6 @@ export default function AddButton({ ...ourRoutes }) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
-  // Complete later
-  // Use a switch here if user selects file make a drag & drop
-  // if they want folder just make them wirte folder
   if (isDesktop) {
     return (
       <>

@@ -68,6 +68,7 @@ export default function FileFolderAdder({
     e.preventDefault();
     if (!selectedFile) {
       console.error("No file selected");
+      toast.error("No file selected");
       return;
     }
     const computeSHA256 = async (file: File) => {

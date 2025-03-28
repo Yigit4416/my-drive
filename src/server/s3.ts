@@ -1,8 +1,14 @@
 "use server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+} from "@aws-sdk/client-s3";
 import { env } from "~/env";
 import { auth } from "@clerk/nextjs/server";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { getFileKey } from "./queries";
 
 // Type checking for environment variables
 const bucketName = env.BUCKET_NAME || "";
@@ -23,7 +29,7 @@ const s3 = new S3Client({
   },
 });
 
-const maxSize = 5 * 1024 * 1024 // 5MB
+const maxSize = 5 * 1024 * 1024; // 5MB
 
 const acceptedTypes = [
   "image/jpeg",
@@ -48,11 +54,11 @@ export async function generateSignedUrl({
   const session = await auth();
   if (!session.userId) throw new Error("Unauthorized");
 
-  if(!acceptedTypes.includes(contentType)) {
+  if (!acceptedTypes.includes(contentType)) {
     throw new Error("Invalid file type");
   }
 
-  if(size > maxSize) {
+  if (size > maxSize) {
     throw new Error("File size is too large");
   }
 
@@ -60,9 +66,9 @@ export async function generateSignedUrl({
     const array = new Uint8Array(byte);
     crypto.getRandomValues(array);
     return [...array].map((b) => b.toString(16).padStart(2, "0")).join("");
-  }
+  };
 
-  const newFileName = generateFileName()
+  const newFileName = generateFileName();
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: bucketName,
@@ -71,12 +77,26 @@ export async function generateSignedUrl({
     ContentType: contentType,
     Metadata: {
       "x-amz-meta-user-id": session.userId,
-    }
+    },
   });
-
 
   // You have 60 seconds to upload the file
   const signedUrl = await getSignedUrl(s3, putObjectCommand, { expiresIn: 60 });
 
   return { success: { url: signedUrl, fileName: newFileName } };
+}
+
+export async function deleteFileItem({ itemId }: { itemId: number }) {
+  try {
+    const itemKey = await getFileKey({ itemId: itemId });
+    const fileKey = itemKey.split("/").pop();
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: bucketName,
+      Key: fileKey,
+    });
+    await s3.send(deleteCommand);
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error on deleting object");
+  }
 }

@@ -2,6 +2,8 @@ import "server-only";
 import { db } from "./db";
 import { files, folders } from "./db/schema";
 import { auth } from "@clerk/nextjs/server";
+import { and, eq } from "drizzle-orm";
+import { deleteFileItem } from "./s3";
 
 export async function getFolders(id: number) {
   //Make sure that userId is walid and check with queries
@@ -123,4 +125,49 @@ export async function getFolderIdWithRoute({
   });
   if (!result) throw new Error("Couldn't find folder");
   return result;
+}
+
+export async function deleteItem({
+  itemId,
+  type,
+}: {
+  itemId: number;
+  type: string;
+}) {
+  const user = await auth();
+  if (!user.userId) throw new Error("Unauthorized");
+  if (type !== "folder") {
+    try {
+      await deleteFileItem({ itemId: itemId });
+      const result = await db
+        .delete(files)
+        .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
+        .returning();
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Something went wrong on deleting");
+    }
+  } else {
+    try {
+      const result = await db
+        .delete(folders)
+        .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
+        .returning();
+      return result;
+    } catch (error) {
+      throw new Error("Something went wrong on deleting folder");
+    }
+  }
+}
+
+export async function getFileKey({ itemId }: { itemId: number }) {
+  const user = await auth();
+  if (!user.userId) throw new Error("Unauthhorized");
+  const result = await db.query.files.findFirst({
+    where: (model, { eq, and }) =>
+      and(eq(model.id, itemId), eq(model.userId, user.userId)),
+  });
+  if (!result) throw new Error("Couldn't find file.");
+  return result.route;
 }
