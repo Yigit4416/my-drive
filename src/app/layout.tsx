@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import TopNav from "./_components/topnav";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "S3 Drive",

@@ -23,6 +23,7 @@
 - [x] delete button is functioning but somehow it doesn't delete from s3 need to look at that.
 - [x] make share button fully functioning
 - [x] make rename
+- [x] loading screen looks ridiculus take a look at that
 - [ ] child folders are not deleted
 - [ ] make sure that when uploading something make it reload
 - [ ] look for how to show users pdf or excel files
