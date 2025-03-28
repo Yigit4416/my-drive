@@ -15,7 +15,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Input } from "~/components/ui/input";
-import CopyButton from "./copybutton";
+import CopyButton from "../_sharefolder/copybutton";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -26,6 +26,9 @@ import { TrashIcon } from "lucide-react";
 import { Toaster } from "~/components/ui/sonner";
 import { FolderSVG, DocumentSVG, ImageSVG } from "../_allSVG/svgfuncs";
 import DeleteContext from "../_deletecontextfile/deletecontext";
+import { ShareContext } from "../_sharefolder/sharecontext";
+import RenameContext from "../_renamefile/renamecontext";
+import { Suspense } from "react";
 
 export default async function DataCard({
   itemId,
@@ -64,90 +67,20 @@ export default async function DataCard({
           </Card>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          {type !== "folder" && <ShareContext />}
+          {type !== "folder" && <ShareContext itemLink={route} />}
           <ContextMenuItem asChild>
-            <RenameContext name={name} />
+            <Suspense fallback={<div>Loading...</div>}>
+              <RenameContext name={name} itemId={itemId} type={type} />
+            </Suspense>
           </ContextMenuItem>
           <ContextMenuItem asChild>
-            <DeleteContext itemId={itemId} type={type} />
+            <Suspense fallback={<div>Loading...</div>}>
+              <DeleteContext itemId={itemId} type={type} />
+            </Suspense>
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
       <Toaster richColors />
     </>
-  );
-}
-
-function RenameContext({ name }: { name: string }) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-black hover:bg-slate-200">
-          Rename
-        </button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Rename file</DialogTitle>
-          <DialogDescription>
-            Enter a new name for this file/folder.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Name</Label>
-            <Input placeholder={name} />
-          </div>
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <DialogClose asChild>
-            <Button>Save changes</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function ShareContext() {
-  return (
-    <ContextMenuItem asChild>
-      <Dialog>
-        <DialogTrigger asChild>
-          <button className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-black hover:bg-blue-100">
-            Share
-          </button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Share link</DialogTitle>
-            <DialogDescription>
-              Anyone who has this link will be able to view this.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center space-x-2">
-            <div className="grid flex-1 gap-2">
-              <Label className="sr-only">Link</Label>
-              <Input
-                id="link"
-                defaultValue="https://ui.shadcn.com/docs/installation"
-                readOnly
-              />
-            </div>
-            <CopyButton link="for now this is not functioning properly" />
-          </div>
-          <DialogFooter className="sm:justify-start">
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">
-                Close
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </ContextMenuItem>
   );
 }

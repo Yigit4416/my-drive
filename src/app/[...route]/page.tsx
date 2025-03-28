@@ -1,5 +1,6 @@
 "use server";
 import { auth } from "@clerk/nextjs/server";
+import { Suspense } from "react";
 import DataCard from "~/app/_components/data-card";
 import {
   getChildFolders,
@@ -7,6 +8,7 @@ import {
   getFolderIdWithRoute,
   getFolders,
 } from "~/server/queries";
+import SkeletonCard from "../loading";
 
 async function OurList({
   route,
@@ -77,7 +79,9 @@ export default async function PhotoPage({
 
   return (
     <div className="mt-20 flex flex-wrap justify-center gap-4">
-      <OurList route={routePath} routeList={param.route} />
+      <Suspense fallback={<SkeletonCard />}>
+        <OurList route={routePath} routeList={param.route} />
+      </Suspense>
     </div>
   );
 }

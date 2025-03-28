@@ -21,8 +21,10 @@
 - [x] on prod neon db causing issues probably about env.
 - [x] make delete button
 - [x] delete button is functioning but somehow it doesn't delete from s3 need to look at that.
-- [ ] make share button fully functioning
-- [ ] make sure that when uploading something make it reload (after you make cache make it revalidate)
+- [x] make share button fully functioning
+- [x] make rename
+- [ ] child folders are not deleted
+- [ ] make sure that when uploading something make it reload
 - [ ] look for how to show users pdf or excel files
 - [x] make sure that uploading will be at client side not on server
 - [ ] make it shareable if user wants

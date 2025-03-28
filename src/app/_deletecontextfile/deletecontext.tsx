@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { DeleteItem } from "./servertoclientdelete";
+import { removeItem } from "./servertoclientdelete";
 import { useRouter } from "next/navigation";
 
 export default function DeleteContext({
@@ -31,15 +31,18 @@ export default function DeleteContext({
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await DeleteItem({ itemId: itemId, type: type });
-      toast.success("Item deleted");
-      setOpen(false); // Close the dialog on success
+      await removeItem({
+        itemId: itemId,
+        type: type,
+      });
+      setOpen(false);
       router.refresh();
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong while deleting");
     } finally {
       setLoading(false);
+      toast.success("Item deleted");
     }
   };
 

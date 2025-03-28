@@ -84,7 +84,6 @@ export default function FileFolderAdder({
 
     try {
       const signedUrlResult = await generateSignedUrl({
-        fileName: selectedFile.name,
         contentType: selectedFile.type,
         size: selectedFile.size,
         checksum: checksum,

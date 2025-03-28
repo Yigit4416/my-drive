@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 import { deleteItem } from "~/server/queries";
 
-export async function DeleteItem({
+export async function removeItem({
   itemId,
   type,
 }: {
@@ -11,7 +11,7 @@ export async function DeleteItem({
   type: string;
 }) {
   try {
-    const result = await deleteItem({ itemId, type });
+    await deleteItem({ itemId: itemId, type: type });
   } catch (error) {
     console.error(error);
   }

@@ -41,12 +41,10 @@ const acceptedTypes = [
 ];
 
 export async function generateSignedUrl({
-  fileName,
   contentType,
   size,
   checksum,
 }: {
-  fileName: string;
   contentType: string;
   size: number;
   checksum: string;

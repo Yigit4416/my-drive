@@ -171,3 +171,38 @@ export async function getFileKey({ itemId }: { itemId: number }) {
   if (!result) throw new Error("Couldn't find file.");
   return result.route;
 }
+
+export async function renameItem({
+  itemId,
+  type,
+  newName,
+}: {
+  itemId: number;
+  type: string;
+  newName: string;
+}) {
+  const user = await auth();
+  if (!user.userId) throw new Error("Unauthorized");
+  if (type !== "folder") {
+    try {
+      await db
+        .update(files)
+        .set({ name: newName })
+        .where(and(eq(files.id, itemId), eq(files.userId, user.userId)));
+    } catch (error) {
+      console.error(error);
+      throw new Error("Something went wrong");
+    }
+  } else {
+    try {
+      const result = await db
+        .update(folders)
+        .set({ name: newName })
+        .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
+        .returning();
+      return result;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
