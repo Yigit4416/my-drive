@@ -127,42 +127,6 @@ export async function getFolderIdWithRoute({
   return result;
 }
 
-/*
-export async function deleteItem({
-  itemId,
-  type,
-}: {
-  itemId: number;
-  type: string;
-}) {
-  const user = await auth();
-  if (!user.userId) throw new Error("Unauthorized");
-  if (type !== "folder") {
-    try {
-      await deleteFileItem({ itemId: itemId });
-      const result = await db
-        .delete(files)
-        .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
-        .returning();
-      return result;
-    } catch (error) {
-      console.log(error);
-      throw new Error("Something went wrong on deleting");
-    }
-  } else {
-    try {
-      const result = await db
-        .delete(folders)
-        .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
-        .returning();
-      return result;
-    } catch (error) {
-      throw new Error("Something went wrong on deleting folder");
-    }
-  }
-}
-*/
-
 export async function getFileKey({ itemId }: { itemId: number }) {
   const user = await auth();
   if (!user.userId) throw new Error("Unauthhorized");
