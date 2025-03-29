@@ -3,7 +3,7 @@ import { db } from "./db";
 import { files, folders } from "./db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-import { deleteFileItem } from "./s3";
+import { deleteFileItem, deleteMultipleFiles } from "./s3";
 
 export async function getFolders(id: number) {
   //Make sure that userId is walid and check with queries
@@ -127,6 +127,7 @@ export async function getFolderIdWithRoute({
   return result;
 }
 
+/*
 export async function deleteItem({
   itemId,
   type,
@@ -160,6 +161,7 @@ export async function deleteItem({
     }
   }
 }
+*/
 
 export async function getFileKey({ itemId }: { itemId: number }) {
   const user = await auth();
@@ -203,6 +205,72 @@ export async function renameItem({
       return result;
     } catch (error) {
       console.error(error);
+    }
+  }
+}
+
+export async function deleteItem({
+  itemId,
+  type,
+}: {
+  itemId: number;
+  type: string;
+}) {
+  const user = await auth();
+  if (!user.userId) throw new Error("Unauthorized");
+
+  if (type !== "folder") {
+    try {
+      // Handle file deletion
+      await deleteFileItem({ itemId: itemId });
+      const result = await db
+        .delete(files)
+        .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
+        .returning();
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Something went wrong on deleting file");
+    }
+  } else {
+    try {
+      // Handle folder deletion (recursive)
+      const childFolders = await getChildFolders(itemId);
+
+      // Process each child folder recursively
+      for (const child of childFolders) {
+        await deleteItem({
+          itemId: child.id,
+          type: child.type,
+        });
+      }
+
+      // Delete files in this folder
+      const folderFiles = await getFiles(itemId);
+      if (folderFiles.length > 0) {
+        const keys = folderFiles.map((file) => file.route);
+        await deleteMultipleFiles({ itemKeys: keys });
+
+        // Delete file records from database
+        /*
+        for (const file of folderFiles) {
+          await db
+            .delete(files)
+            .where(and(eq(files.id, file.id), eq(files.userId, user.userId)));
+        }
+        */
+      }
+
+      // Finally delete this folder
+      const result = await db
+        .delete(folders)
+        .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
+        .returning();
+
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Something went wrong on deleting folder");
     }
   }
 }

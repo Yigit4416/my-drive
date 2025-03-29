@@ -24,7 +24,7 @@
 - [x] make share button fully functioning
 - [x] make rename
 - [x] loading screen looks ridiculus take a look at that
-- [ ] child folders are not deleted
+- [x] child folders are not deleted from db and child files are not deleted from s3 when deleting the parent folder
 - [x] make sure that when uploading something make it reload
 - [ ] look for how to show users pdf or excel files
 - [x] make sure that uploading will be at client side not on server
@@ -39,3 +39,12 @@
 - Copy button doesn't functioning propperly (after connecting with S3 this will be contain link we want)
 - drawer.tsx might give error because DialogTitle.
 - Rather than breadcrumb you can use side bar with scroll area so you don't have to worry about size of route
+
+## deleting parent folder tactic
+
+- get parent folder id
+- go and look for files that have that folder id
+- delete it from s3 (when you delete folder itself it will also delete from db so don't need to go there)
+  - look for multiple deltes at the same time function that could save more time
+- after that go to folders db and look for folders that has parentId as that folder id
+- get them into a list and start looping with recursion (recall the deletefolder function)

@@ -98,3 +98,29 @@ export async function deleteFileItem({ itemId }: { itemId: number }) {
     throw new Error("Error on deleting object");
   }
 }
+
+export async function deleteMultipleFiles({
+  itemKeys,
+}: {
+  itemKeys: string[];
+}) {
+  if (itemKeys.length > 0) {
+    try {
+      const objects = itemKeys.map((itemKey) => ({
+        Key: itemKey.split("/").pop(),
+      }));
+
+      const deleteParams = {
+        Bucket: env.BUCKET_NAME,
+        Delete: {
+          Objects: objects,
+        },
+      };
+
+      const deleteCommand = new DeleteObjectsCommand(deleteParams);
+      await s3.send(deleteCommand);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}

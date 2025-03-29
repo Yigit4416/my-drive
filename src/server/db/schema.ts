@@ -1,6 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
+import { relations } from "drizzle-orm";
 import {
   index,
   integer,
@@ -17,24 +18,6 @@ import {
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const createTable = pgTableCreator((name) => `my-drive_${name}`);
-/*
-export const posts = createTable(
-  "post",
-  {
-    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar("name", { length: 256 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
-    ),
-  },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
-);
-*/
 
 export const folders = createTable(
   "folders",
@@ -42,12 +25,10 @@ export const folders = createTable(
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     route: text("route").notNull(),
-    // cascade for parentId gives type error probably because we try to create that function before it executed and it gives us type error
-    //look into it later again or just handle in server side logic.
     parentId: integer("parent_id"),
     type: varchar("type", { length: 50 }).notNull(),
     size: integer("size").default(0).notNull(),
-    userId: varchar("userId", {length: 250}).notNull(),
+    userId: varchar("userId", { length: 250 }).notNull(),
   },
   (table) => {
     return {
@@ -69,7 +50,7 @@ export const files = createTable(
       .notNull(),
     route: text("route").notNull(),
     size: integer("size").default(0).notNull(),
-    userId: varchar("userId", {length: 250}).notNull(),
+    userId: varchar("userId", { length: 250 }).notNull(),
   },
   (table) => {
     return {
