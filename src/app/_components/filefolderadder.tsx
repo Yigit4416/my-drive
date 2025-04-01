@@ -189,5 +189,29 @@ function sanitizeInput(input: string): string {
     throw new Error("Invalid input: '/' is not allowed.");
   }
 
-  return input.toLowerCase().replace(/\s+/g, "_");
+  // First normalize the text by replacing special characters
+  const replacements: { [key: string]: string } = {
+    ğ: "g",
+    Ğ: "G",
+    ı: "i",
+    I: "I",
+    İ: "I",
+    ş: "s",
+    Ş: "S",
+    ç: "c",
+    Ç: "C",
+    ö: "o",
+    Ö: "O",
+    ü: "u",
+    Ü: "U",
+  };
+
+  // Replace each special character with its English counterpart
+  let sanitized = input;
+  for (const [char, replacement] of Object.entries(replacements)) {
+    sanitized = sanitized.replace(new RegExp(char, "g"), replacement);
+  }
+
+  // Convert to lowercase and replace spaces with underscores
+  return sanitized.toLowerCase().replace(/\s+/g, "_");
 }
