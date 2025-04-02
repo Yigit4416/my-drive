@@ -29,7 +29,7 @@ const s3 = new S3Client({
   },
 });
 
-const maxSize = 5 * 1024 * 1024; // 5MB
+const maxSize = 50 * 1024 * 1024; // 50MB
 
 const acceptedTypes = [
   "image/jpeg",
