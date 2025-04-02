@@ -7,7 +7,6 @@ import {
 } from "@clerk/nextjs";
 import Link from "next/link";
 import { NavBar } from "./navbar";
-import AddButton from "./addbutton";
 
 export default function TopNav() {
   return (

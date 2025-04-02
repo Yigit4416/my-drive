@@ -48,7 +48,7 @@ export default async function DataCard({
       <ContextMenu>
         <ContextMenuTrigger>
           <Card className="w-48">
-            <Link href={route}>
+            <Link href={route} prefetch={true}>
               <CardHeader>
                 {type === "folder" && <FolderSVG />}
                 {type.includes("application") && <DocumentSVG />}
