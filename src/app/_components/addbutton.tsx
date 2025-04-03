@@ -89,8 +89,12 @@ export default function AddButton({ ...ourRoutes }) {
           </DialogHeader>
           <Tabs defaultValue="folder" className="w-full">
             <TabsList className="mb-4 grid w-full grid-cols-2 rounded-md">
-              <TabsTrigger value="folder" className="rounded-l-md">Folder</TabsTrigger>
-              <TabsTrigger value="file" className="rounded-r-md">File</TabsTrigger>
+              <TabsTrigger value="folder" className="rounded-l-md">
+                Folder
+              </TabsTrigger>
+              <TabsTrigger value="file" className="rounded-r-md">
+                File
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="folder">
               <FileFolderAdder
@@ -109,3 +113,4 @@ export default function AddButton({ ...ourRoutes }) {
       </Dialog>
     </div>
   );
+}
