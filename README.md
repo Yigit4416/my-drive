@@ -26,6 +26,7 @@
 - [x] loading screen looks ridiculus take a look at that
 - [x] child folders are not deleted from db and child files are not deleted from s3 when deleting the parent folder
 - [x] make sure that when uploading something make it reload
+- [ ] make move file / folder
 - [ ] look for how to show users pdf or excel files
 - [x] make sure that uploading will be at client side not on server
 - [ ] if elements on breadcrumb more than 4 show other elements in "..." dropdown element

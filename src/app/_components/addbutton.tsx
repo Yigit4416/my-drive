@@ -1,18 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { Button } from "~/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "~/components/ui/command";
-import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer";
 import {
   Dialog,
   DialogContent,
@@ -20,11 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import FileFolderAdder from "./filefolderadder";
 
 type Status = {
@@ -43,44 +28,13 @@ const statuses: Status[] = [
   },
 ];
 
-function StatusList({
-  setOpen,
-  setSelectedStatus,
-}: {
-  setOpen: (open: boolean) => void;
-  setSelectedStatus: (status: Status | null) => void;
-}) {
-  return (
-    <Command>
-      <CommandInput placeholder="Filter status..." />
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup>
-          {statuses.map((status) => (
-            <CommandItem
-              key={status.value}
-              value={status.value}
-              onSelect={(value) => {
-                setSelectedStatus(
-                  statuses.find((priority) => priority.value === value) ?? null,
-                );
-                setOpen(false);
-              }}
-            >
-              {status.label}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
-}
-
 export default function AddButton({ ...ourRoutes }) {
-  const allRoutes = ourRoutes.ourRoutes;
-  const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
-  const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
+
+  if (statuses[0] === undefined || statuses[1] === undefined) {
+    return <div>Statuses undefined</div>;
+  }
+
   if (isDesktop) {
     return (
       <>
@@ -90,31 +44,31 @@ export default function AddButton({ ...ourRoutes }) {
               <Plus />
             </button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Add new thing</DialogTitle>
             </DialogHeader>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-[150px] justify-start">
-                  {selectedStatus ? (
-                    <>{selectedStatus.label}</>
-                  ) : (
-                    <>Folder or File</>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0" align="start">
-                <StatusList
-                  setOpen={setOpen}
-                  setSelectedStatus={setSelectedStatus}
+
+            <Tabs defaultValue="folder" className="w-full">
+              <TabsList className="mb-4 grid w-full grid-cols-2">
+                <TabsTrigger value="folder">Folder</TabsTrigger>
+                <TabsTrigger value="file">File</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="folder">
+                <FileFolderAdder
+                  isFolder={statuses[0]}
+                  ourRoute={ourRoutes.ourRoutes}
                 />
-              </PopoverContent>
-            </Popover>
-            <FileFolderAdder
-              isFolder={selectedStatus}
-              ourRoute={ourRoutes.ourRoutes}
-            />
+              </TabsContent>
+
+              <TabsContent value="file">
+                <FileFolderAdder
+                  isFolder={statuses[1]}
+                  ourRoute={ourRoutes.ourRoutes}
+                />
+              </TabsContent>
+            </Tabs>
           </DialogContent>
         </Dialog>
       </>
@@ -122,42 +76,36 @@ export default function AddButton({ ...ourRoutes }) {
   }
 
   return (
-    <>
+    <div className="rounded-lg border border-gray-200 shadow-sm">
       <Dialog>
         <DialogTrigger asChild>
           <button className="transform rounded-lg bg-gray-900 px-4 py-2 font-medium text-white shadow-md transition duration-200 ease-in-out hover:scale-105 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50">
             <Plus />
           </button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="rounded-lg">
           <DialogHeader>
             <DialogTitle>Add new thing</DialogTitle>
           </DialogHeader>
-          <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerTrigger asChild>
-              <Button className="w-[150px] justify-start">
-                {selectedStatus ? (
-                  <>{selectedStatus.label}</>
-                ) : (
-                  <>Folder or File</>
-                )}
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <div className="mt-4 border-t">
-                <StatusList
-                  setOpen={setOpen}
-                  setSelectedStatus={setSelectedStatus}
-                />
-              </div>
-            </DrawerContent>
-          </Drawer>
-          <FileFolderAdder
-            isFolder={selectedStatus}
-            ourRoute={ourRoutes.ourRoutes}
-          />
+          <Tabs defaultValue="folder" className="w-full">
+            <TabsList className="mb-4 grid w-full grid-cols-2 rounded-md">
+              <TabsTrigger value="folder" className="rounded-l-md">Folder</TabsTrigger>
+              <TabsTrigger value="file" className="rounded-r-md">File</TabsTrigger>
+            </TabsList>
+            <TabsContent value="folder">
+              <FileFolderAdder
+                isFolder={statuses[0]}
+                ourRoute={ourRoutes.ourRoutes}
+              />
+            </TabsContent>
+            <TabsContent value="file">
+              <FileFolderAdder
+                isFolder={statuses[1]}
+                ourRoute={ourRoutes.ourRoutes}
+              />
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
-}
