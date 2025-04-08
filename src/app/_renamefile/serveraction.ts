@@ -13,7 +13,7 @@ export async function handleRenameItem({ newName, itemId, type }: renameType) {
   "use server";
 
   try {
-    renameItem({
+    await renameItem({
       itemId: itemId,
       type: type,
       newName: newName,

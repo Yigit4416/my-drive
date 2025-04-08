@@ -36,26 +36,31 @@ export default function RenameContext({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setError(null); // Reset error state
+    setError(null);
+
+    // Validate input
+    if (!newName.trim()) {
+      setError("Name cannot be empty");
+      setLoading(false);
+      return;
+    }
 
     const submittedData = {
-      newName: newName, // From state
-      itemId: itemId, // From props
-      type: type, // From props
+      newName: newName.trim(),
+      itemId: itemId,
+      type: type,
     };
 
     try {
-      await handleRenameItem(submittedData);
-      setNewName(""); // Reset input field
-      setIsOpen(false); // Close the dialog on success
+      const response = await handleRenameItem(submittedData);
+      setIsOpen(false);
     } catch (err) {
-      setError("Failed to rename item. Please try again."); // Set error message
-      console.error(err); // Log the error for debugging
+      setError("Failed to rename item. Please try again.");
+      console.error(err);
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value);
   };

@@ -52,7 +52,6 @@ export async function createFile({ name, type, folder, route, size }: Files) {
   const user = await auth();
   if (!user.userId) throw new Error("Unauthhorized");
 
-  console.log(`this is our folder: ${folder}`);
 
   const folderId = await getFolderIdWithRoute({
     route: folder,
@@ -149,29 +148,44 @@ export async function renameItem({
 }) {
   const user = await auth();
   if (!user.userId) throw new Error("Unauthorized");
-  if (type !== "folder") {
-    try {
-      await db
+  
+  // Validate input
+  if (!newName || newName.trim() === '') {
+    throw new Error("Name cannot be empty");
+  }
+
+  try {
+    if (type !== "folder") {
+      // For files
+      const result = await db
         .update(files)
-        .set({ name: newName })
-        .where(and(eq(files.id, itemId), eq(files.userId, user.userId)));
-    } catch (error) {
-      console.error(error);
-      throw new Error("Something went wrong");
-    }
-  } else {
-    try {
+        .set({ name: newName.trim() })
+        .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
+        .returning();
+        
+      if (!result || result.length === 0) {
+        throw new Error("File not found or you don't have permission");
+      }
+      
+      return result;
+    } else {
+      // For folders
       const result = await db
         .update(folders)
-        .set({ name: newName })
+        .set({ name: newName.trim() })
         .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
         .returning();
+        
+      if (!result || result.length === 0) {
+        throw new Error("Folder not found or you don't have permission");
+      }
+      
       return result;
-    } catch (error) {
-      console.error(error);
     }
-  }
-}
+  } catch (error) {
+    console.error("Database error during rename:", error);
+    throw error;
+  }}
 
 export async function deleteItem({
   itemId,
