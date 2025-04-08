@@ -1,20 +1,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { toast } from "sonner";
 import { renameItem } from "~/server/queries";
 
-export async function handleRenameItem(formData: FormData) {
-  "use server";
-  const newName = formData.get("newName") as string;
-  const itemId = formData.get("itemId") as string;
-  const type = formData.get("type") as string;
+type renameType = {
+  newName: string; // From state
+  itemId: number; // From props
+  type: string; // From props
+};
 
-  const itemIdAsNumber = parseInt(itemId);
+export async function handleRenameItem({ newName, itemId, type }: renameType) {
+  "use server";
 
   try {
     renameItem({
-      itemId: itemIdAsNumber,
+      itemId: itemId,
       type: type,
       newName: newName,
     });
