@@ -1,34 +1,20 @@
 "use server";
 
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-  DialogHeader,
-  DialogFooter,
-  DialogClose,
-} from "~/components/ui/dialog";
 import Link from "next/link";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { Input } from "~/components/ui/input";
-import CopyButton from "../_sharefolder/copybutton";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "~/components/ui/context-menu";
-import { TrashIcon } from "lucide-react";
 import { Toaster } from "~/components/ui/sonner";
 import { FolderSVG, DocumentSVG, ImageSVG } from "../_allSVG/svgfuncs";
 import DeleteContext from "../_deletecontextfile/deletecontext";
 import { ShareContext } from "../_sharefolder/sharecontext";
 import RenameContext from "../_renamefile/renamecontext";
 import { Suspense } from "react";
+import RelocateItem from "../_relocate/relocate";
 
 export default async function DataCard({
   itemId,
@@ -71,6 +57,11 @@ export default async function DataCard({
           <ContextMenuItem asChild>
             <Suspense fallback={<div>Loading...</div>}>
               <RenameContext name={name} itemId={itemId} type={type} />
+            </Suspense>
+          </ContextMenuItem>
+          <ContextMenuItem asChild>
+            <Suspense fallback={<div>Loading...</div>}>
+              <RelocateItem />
             </Suspense>
           </ContextMenuItem>
           <ContextMenuItem asChild>

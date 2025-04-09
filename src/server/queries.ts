@@ -52,7 +52,6 @@ export async function createFile({ name, type, folder, route, size }: Files) {
   const user = await auth();
   if (!user.userId) throw new Error("Unauthhorized");
 
-
   const folderId = await getFolderIdWithRoute({
     route: folder,
     userId: user.userId,
@@ -148,9 +147,9 @@ export async function renameItem({
 }) {
   const user = await auth();
   if (!user.userId) throw new Error("Unauthorized");
-  
+
   // Validate input
-  if (!newName || newName.trim() === '') {
+  if (!newName || newName.trim() === "") {
     throw new Error("Name cannot be empty");
   }
 
@@ -162,12 +161,7 @@ export async function renameItem({
         .set({ name: newName.trim() })
         .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
         .returning();
-        
-      if (!result || result.length === 0) {
-        throw new Error("File not found or you don't have permission");
-      }
-      
-      return result;
+      console.log(result);
     } else {
       // For folders
       const result = await db
@@ -175,17 +169,18 @@ export async function renameItem({
         .set({ name: newName.trim() })
         .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
         .returning();
-        
+
       if (!result || result.length === 0) {
         throw new Error("Folder not found or you don't have permission");
       }
-      
+
       return result;
     }
   } catch (error) {
     console.error("Database error during rename:", error);
     throw error;
-  }}
+  }
+}
 
 export async function deleteItem({
   itemId,
@@ -228,15 +223,6 @@ export async function deleteItem({
       if (folderFiles.length > 0) {
         const keys = folderFiles.map((file) => file.route);
         await deleteMultipleFiles({ itemKeys: keys });
-
-        // Delete file records from database
-        /*
-        for (const file of folderFiles) {
-          await db
-            .delete(files)
-            .where(and(eq(files.id, file.id), eq(files.userId, user.userId)));
-        }
-        */
       }
 
       // Finally delete this folder

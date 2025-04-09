@@ -13,14 +13,15 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import CopyButton from "./copybutton";
+import { Share } from "lucide-react";
 
 export async function ShareContext({ itemLink }: { itemLink: string }) {
   return (
     <ContextMenuItem asChild>
       <Dialog>
         <DialogTrigger asChild>
-          <button className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-black hover:bg-blue-100">
-            Share
+          <button className="focus:ring-primary-500 dark:focus:ring-primary-400 flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 focus:outline-none focus:ring-2 dark:text-gray-300 dark:hover:bg-gray-800">
+            <Share className="h-4 w-4"/> Share
           </button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">

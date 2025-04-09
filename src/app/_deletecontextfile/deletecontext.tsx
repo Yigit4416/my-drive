@@ -49,7 +49,7 @@ export default function DeleteContext({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-red-600 hover:bg-red-50">
+        <button className="focus:ring-primary-500 dark:focus:ring-primary-400 flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 text-red-600 hover:bg-red-50">
           <TrashIcon className="h-4 w-4" /> Delete
         </button>
       </DialogTrigger>
