@@ -6,7 +6,6 @@ import {
   getChildFolders,
   getFiles,
   getFolderIdWithRoute,
-  getFolders,
 } from "~/server/queries";
 import SkeletonCard from "../loading";
 

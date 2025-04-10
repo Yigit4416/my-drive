@@ -238,3 +238,28 @@ export async function deleteItem({
     }
   }
 }
+
+export async function getAllFolders() {
+  const user = await auth();
+  if (!user.userId) throw new Error("Unauthorized");
+
+  const result = await db.query.folders.findMany({
+    where: (model, { eq }) => eq(model.userId, user.userId),
+  });
+
+  if (result === undefined || result === null) {
+    const data = [
+      {
+        id: 4,
+        name: "root",
+        route: "/root",
+        parentId: 0,
+        type: "folder",
+        size: 0,
+        userId: "everyone",
+      },
+    ];
+    return data;
+  }
+  return result;
+}
