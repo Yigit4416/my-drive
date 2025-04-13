@@ -16,6 +16,7 @@ import RenameContext from "../_renamefile/renamecontext";
 import { Suspense } from "react";
 import RelocateItem from "../_relocate/relocate";
 
+// Let's make files and photos color different (only a idea might not do at all)
 export default async function DataCard({
   itemId,
   name,

@@ -4,11 +4,12 @@ import { files, folders } from "./db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { deleteFileItem, deleteMultipleFiles } from "./s3";
+import { strict } from "assert";
 
 export async function getFolders(id: number) {
   //Make sure that userId is walid and check with queries
   const user = await auth();
-  if (!user.userId) throw new Error("Unauthhorized");
+  if (!user.userId) throw new Error("Unauthorized");
 
   const result = await db.query.folders.findFirst({
     where: (model, { eq, and }) =>
@@ -21,7 +22,7 @@ export async function getFolders(id: number) {
 
 export async function getChildFolders(parentId: number) {
   const user = await auth();
-  if (!user.userId) throw new Error("Unauthhorized");
+  if (!user.userId) throw new Error("Unauthorized");
   const result = await db.query.folders.findMany({
     where: (model, { eq, and }) =>
       and(eq(model.parentId, parentId), eq(model.userId, user.userId)),
@@ -32,7 +33,7 @@ export async function getChildFolders(parentId: number) {
 
 export async function getFiles(folderId: number) {
   const user = await auth();
-  if (!user.userId) throw new Error("Unauthhorized");
+  if (!user.userId) throw new Error("Unauthorized");
   const result = db.query.files.findMany({
     where: (model, { eq }) => eq(model.folderId, folderId),
   });
@@ -50,7 +51,7 @@ type Files = {
 
 export async function createFile({ name, type, folder, route, size }: Files) {
   const user = await auth();
-  if (!user.userId) throw new Error("Unauthhorized");
+  if (!user.userId) throw new Error("Unauthorized");
 
   const folderId = await getFolderIdWithRoute({
     route: folder,
@@ -262,4 +263,30 @@ export async function getAllFolders() {
     return data;
   }
   return result;
+}
+
+export async function relocateFunc({
+  itemId,
+  newRoute,
+  type,
+}: {
+  itemId: number;
+  newRoute: string;
+  type: string;
+}) {
+  // rather than directly getting route get route id and then get what is that things route is and after that update the values
+  // with this files also going to get easier and there wont be any conflicts.
+  const user = await auth();
+  if (!user.userId) throw new Error("Unauthorized");
+
+  if (type === "folder") {
+    const result = await db
+      .update(folders)
+      .set({
+        route: newRoute,
+      })
+      .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
+      .returning();
+    return result;
+  }
 }

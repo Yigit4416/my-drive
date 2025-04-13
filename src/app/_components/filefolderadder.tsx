@@ -17,6 +17,7 @@ type Status = {
   label: string;
 };
 
+// Need to make sure that when starting uploading it should unable the button and only after uploading finishes it will allow it (also check for did i look for item is emptey or not)
 export default function FileFolderAdder({
   isFolder,
   ourRoute,

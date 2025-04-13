@@ -26,7 +26,9 @@ type AllFolders = {
   userId: string;
 };
 export default function RelocateItem() {
+  const [folderSelected, setFolderSelected] = useState<boolean>(true);
   const [allFolders, setAllFolders] = useState<AllFolders[]>();
+  // Used ir so i won't get hydration error (makes sure that works on ONLY client)
   useEffect(() => {
     // Do not forget to use here with async
     async function getAllFolders() {
@@ -37,7 +39,7 @@ export default function RelocateItem() {
         console.error(error);
       }
     }
-    getAllFolders();
+    void getAllFolders();
   }, []);
 
   return (
@@ -53,7 +55,10 @@ export default function RelocateItem() {
           <DialogTitle>New Location</DialogTitle>
         </DialogHeader>
         <div>
-          <FoldersScrollArea allFolders={allFolders} />
+          <FoldersScrollArea
+            allFolders={allFolders}
+            setFolderSelected={setFolderSelected}
+          />
         </div>
         <DialogFooter>
           <DialogClose asChild>
@@ -61,7 +66,7 @@ export default function RelocateItem() {
               Cancle
             </Button>
           </DialogClose>
-          <Button variant={"outline"} type="submit">
+          <Button variant={"outline"} type="submit" disabled={folderSelected}>
             Apply
           </Button>
         </DialogFooter>
@@ -70,18 +75,19 @@ export default function RelocateItem() {
   );
 }
 
+// sed just to tidy up main func.
 function FoldersScrollArea({
   allFolders,
+  setFolderSelected,
 }: {
   allFolders: AllFolders[] | undefined;
+  setFolderSelected: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [foldersToUseState, setFoldersToUseState] = useState<AllFolders[]>();
   const [selectedFolderId, setSelectedFolderId] = useState<number>(4);
 
   // still need to handle go back function
   const handleClick = (folderId: number) => {
-    console.log(folderId);
-    console.info("button pressed");
     setSelectedFolderId(folderId);
     //if this doesn't work use selectedFolderId
     const data = foldersToUse({
@@ -95,6 +101,10 @@ function FoldersScrollArea({
     handleClick(4);
   }, []);
 
+  const setFolder = () => {
+    setFolderSelected(false);
+  };
+
   if (allFolders === undefined) {
     return <div>You haven't got any folders mate</div>;
   } else {
@@ -104,8 +114,14 @@ function FoldersScrollArea({
           {foldersToUseState?.map((tag, index) => (
             <div key={index} className="mb-1 border-b">
               <div className="text-sm">
-                <Button variant={"link"} onClick={() => handleClick(tag.id)}>
+                <Button
+                  variant={"link"}
+                  onMouseDown={() => handleClick(tag.id)}
+                >
                   {tag.name}
+                </Button>
+                <Button onMouseDown={() => setFolder()}>
+                  Select this folder
                 </Button>
               </div>
               <Separator className="my-1" />
@@ -125,6 +141,7 @@ function foldersToUse({
   selectedFolderId: number;
 }): AllFolders[] {
   if (allFolders === undefined) {
+    // Made this so i can get rid of might be undefined BUT IT WON'T ABLE TO just because i hard coded some of the staf.
     const data: AllFolders[] = [
       {
         id: 4,
