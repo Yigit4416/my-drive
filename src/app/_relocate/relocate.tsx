@@ -13,7 +13,7 @@ import {
   DialogClose,
 } from "~/components/ui/dialog";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { getFolders } from "./servertoclient";
+import { getFolders, applyDirChange } from "./servertoclient";
 import { useEffect, useState } from "react";
 
 type AllFolders = {
@@ -41,6 +41,22 @@ export default function RelocateItem() {
     }
     void getAllFolders();
   }, []);
+  
+  type ApplyDir = {
+  itemId: number;
+  newRouteId: number;
+  type: string;
+  }
+
+  // Acaba bunun yerine bunu alıp her elementin butonunun içine gömüp sonrasında emin misin diye bir soru tarzı bir şey mi yapsamp???
+  const handleApply = async ({itemId, newRouteId, type}: ApplyDir) => {
+    const result = await applyDirChange({
+      itemId: itemId,
+      newRouteId: newRouteId,
+      type: type
+    })
+    console.info(result)
+  }
 
   return (
     <Dialog>
@@ -63,7 +79,7 @@ export default function RelocateItem() {
         <DialogFooter>
           <DialogClose asChild>
             <Button variant={"destructive"} className="hover:bg-red-400">
-              Cancle
+              Cancel
             </Button>
           </DialogClose>
           <Button variant={"outline"} type="submit" disabled={folderSelected}>
@@ -75,7 +91,7 @@ export default function RelocateItem() {
   );
 }
 
-// sed just to tidy up main func.
+// set just to tidy up main func.
 function FoldersScrollArea({
   allFolders,
   setFolderSelected,
@@ -113,7 +129,7 @@ function FoldersScrollArea({
         <div className="p-4">
           {foldersToUseState?.map((tag, index) => (
             <div key={index} className="mb-1 border-b">
-              <div className="text-sm">
+              <div className="flex items-center justify-between text-sm">
                 <Button
                   variant={"link"}
                   onMouseDown={() => handleClick(tag.id)}

@@ -4,7 +4,6 @@ import { files, folders } from "./db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { deleteFileItem, deleteMultipleFiles } from "./s3";
-import { strict } from "assert";
 
 export async function getFolders(id: number) {
   //Make sure that userId is walid and check with queries
@@ -267,11 +266,11 @@ export async function getAllFolders() {
 
 export async function relocateFunc({
   itemId,
-  newRoute,
+  newRouteId,
   type,
 }: {
   itemId: number;
-  newRoute: string;
+  newRouteId: number;
   type: string;
 }) {
   // rather than directly getting route get route id and then get what is that things route is and after that update the values
@@ -283,7 +282,7 @@ export async function relocateFunc({
     const result = await db
       .update(folders)
       .set({
-        route: newRoute,
+        parentId: newRouteId,
       })
       .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
       .returning();
