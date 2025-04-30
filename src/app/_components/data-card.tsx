@@ -62,7 +62,7 @@ export default async function DataCard({
           </ContextMenuItem>
           <ContextMenuItem asChild>
             <Suspense fallback={<div>Loading...</div>}>
-              <RelocateItem />
+              <RelocateItem itemId={itemId} />
             </Suspense>
           </ContextMenuItem>
           <ContextMenuItem asChild>
