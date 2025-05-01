@@ -26,7 +26,7 @@ export function NavBar() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <Link href="/" passHref legacyBehavior>
+            <Link href="/">
               <BreadcrumbLink>Home</BreadcrumbLink>
             </Link>
           </BreadcrumbItem>
@@ -37,7 +37,7 @@ export function NavBar() {
               <Fragment key={href}>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <Link href={href} passHref legacyBehavior>
+                  <Link href={href}>
                     <BreadcrumbLink>{segment}</BreadcrumbLink>
                   </Link>
                 </BreadcrumbItem>

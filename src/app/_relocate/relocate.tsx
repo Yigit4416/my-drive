@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { getFolders } from "./servertoclient";
+import { applyDirChange, getFolders } from "./servertoclient";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
 
 type AllFolders = {
   id: number;
@@ -24,32 +26,59 @@ type AllFolders = {
 };
 
 export default function RelocateItem({ itemId }: { itemId: number }) {
-  const [allFolders, setAllFolders] = useState<AllFolders[]>([]);
+  const [rawFolders, setRawFolders] = useState<AllFolders[]>([]);
   const [currentFolderId, setCurrentFolderId] = useState<number>(4);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [folderToMove, setFolderToMove] = useState<number>(itemId);
+  const [openApply, setOpenApply] = useState(true);
+
+  useEffect(() => {
+    const asyncFunc = async () => {
+      const result = await getFolders();
+      setRawFolders(result);
+    };
+    asyncFunc();
+  }, []);
+
+  useEffect(() => {
+    if (dialogOpen) setCurrentFolderId(4);
+  }, [dialogOpen]);
+
+  const filteredFolders = useMemo(() => {
+    return FoldersToShow({ allFolders: rawFolders, currentFolderId });
+  }, [rawFolders, currentFolderId]);
 
   const folderSelector = (itemId: number) => {
     setCurrentFolderId(itemId);
   };
 
-  useEffect(() => {
-    const asyncFunc = async () => {
-      const result = await getFolders();
-      return result;
-    };
-
-    asyncFunc().then((result) => {
-      setAllFolders(result);
-    });
-  }, []);
+  const itemMover = (movedId: number) => {
+    setFolderToMove(movedId);
+    setOpenApply(false);
+  };
 
   useEffect(() => {
-    setCurrentFolderId(4);
-  }, [dialogOpen]);
+    toast.error(folderToMove);
+  }, [folderToMove, openApply]);
 
-  useEffect(() => {
-    setAllFolders(FoldersToShow({ allFolders, currentFolderId }));
-  }, [currentFolderId]);
+  const moveItem = async ({
+    newRouteId,
+    type,
+  }: {
+    newRouteId: number;
+    type: string;
+  }) => {
+    try {
+      const result = await applyDirChange({
+        itemId: folderToMove,
+        newRouteId: newRouteId,
+        type: type,
+      });
+      console.info(result);
+    } catch (error) {
+      console.info(error);
+    }
+  };
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -65,22 +94,36 @@ export default function RelocateItem({ itemId }: { itemId: number }) {
         <div className="grid gap-4 py-4">
           <ScrollArea className="h-72 w-96 rounded-md border">
             <div className="p-4">
-              {allFolders.map((item) => (
+              {filteredFolders.map((item) => (
                 <div key={item.id}>
-                  <div>
-                    <Button
-                      variant={"link"}
-                      onMouseDown={() => folderSelector(item.id)}
-                    >
-                      {item.name} and its parentId: {item.parentId}
-                    </Button>
-                  </div>
+                  <Button
+                    variant="link"
+                    className="flex w-full hover:bg-slate-300 focus:bg-gray-400"
+                    onMouseDown={() => itemMover(item.id)}
+                  >
+                    <div onMouseDown={() => folderSelector(item.id)}>
+                      {item.name}
+                    </div>
+                  </Button>
                   <Separator className="my-4" />
                 </div>
               ))}
             </div>
           </ScrollArea>
         </div>
+        <DialogFooter>
+          <Button variant={"destructive"}>Cancel</Button>
+          <Button
+            variant={"secondary"}
+            onMouseDown={() =>
+              // check this out later again (type has problem)
+              moveItem({ newRouteId: folderToMove, type: "folder" })
+            }
+            disabled={openApply}
+          >
+            Apply
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

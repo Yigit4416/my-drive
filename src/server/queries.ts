@@ -284,7 +284,7 @@ export async function relocateFunc({
       .set({
         parentId: newRouteId,
       })
-      .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
+      .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
       .returning();
     return result;
   }

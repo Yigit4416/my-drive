@@ -27,7 +27,7 @@
 - [x] child folders are not deleted from db and child files are not deleted from s3 when deleting the parent folder
 - [x] make sure that when uploading something make it reload
 - [x] remake rename
-- [ ] idk why but images can not renamed
+- [x] idk why but images can not renamed
 - [ ] make move file / folder
 - [ ] look for how to show users pdf or excel files
 - [x] make sure that uploading will be at client side not on server
