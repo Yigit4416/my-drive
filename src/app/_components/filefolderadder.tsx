@@ -149,7 +149,7 @@ export default function FileFolderAdder({
               multiple
               type="file"
               name="file"
-              accept="image/jpeg, image/png, application/pdf, image/gif, video/mp4, video/webm"
+              accept="image/*, application/pdf, image/gif, video/mp4, video/webm"
               className="hidden"
               onChange={(e) => {
                 const files = e.target.files;
