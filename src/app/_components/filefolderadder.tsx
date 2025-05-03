@@ -25,15 +25,10 @@ export default function FileFolderAdder({
   isFolder: Status | null;
   ourRoute: Array<string>;
 }) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const router = useRouter(); // Initialize the router
 
   if (isFolder === null) return null;
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setSelectedFile(file);
-  };
 
   const handleFolderSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -76,71 +71,60 @@ export default function FileFolderAdder({
 
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!selectedFile) {
-      console.error("No file selected");
-      toast.error("No file selected");
+    if (!selectedFiles.length) {
+      toast.error("No files selected");
       return;
     }
-    const computeSHA256 = async (file: File) => {
-      const buffer = await file.arrayBuffer();
-      const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray
-        .map((byte) => byte.toString(16).padStart(2, "0"))
-        .join("");
-      return hashHex;
-    };
-    const checksum = await computeSHA256(selectedFile);
 
-    try {
-      const signedUrlResult = await generateSignedUrl({
-        contentType: selectedFile.type,
-        size: selectedFile.size,
-        checksum: checksum,
-      });
-      toast.info("Uploading file...");
-      fetch(signedUrlResult.success.url, {
-        method: "PUT",
-        body: selectedFile,
-        headers: {
-          "Content-Type": selectedFile.type,
-        },
-      })
-        .then(async (response) => {
-          if (!response.ok) {
-            console.error("Failed to upload file:", response);
-            toast.error("Failed to upload file");
-            return;
-          }
-          toast.success("File uploaded successfully");
-          let routeString = ourRoute.join("/");
-          routeString = "/" + routeString;
-          const result = await serverCreateFile({
-            name: selectedFile.name,
-            type: selectedFile.type,
-            size: selectedFile.size,
-            insiderName: signedUrlResult.success.fileName,
-            folder: routeString ?? "root",
-          });
-          toast.success("File added to db");
+    for (const file of selectedFiles) {
+      const computeSHA256 = async (file: File) => {
+        const buffer = await file.arrayBuffer();
+        const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      };
 
-          // Refresh the current page to show the new file
-          router.refresh();
+      const checksum = await computeSHA256(file);
 
-          // Reset the file selection
-          setSelectedFile(null);
-
-          return result;
-        })
-        .catch((error) => {
-          console.error("Error uploading file:", error);
+      try {
+        const signedUrlResult = await generateSignedUrl({
+          contentType: file.type,
+          size: file.size,
+          checksum,
         });
-    } catch (error) {
-      console.error("Error getting signed URL:", error);
-      toast.error("File is larger than 5MB");
-    }
-  };
 
+        toast.info(`Uploading ${file.name}...`);
+        const uploadResponse = await fetch(signedUrlResult.success.url, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          toast.error(`Failed to upload ${file.name}`);
+          continue;
+        }
+
+        await serverCreateFile({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          insiderName: signedUrlResult.success.fileName,
+          folder: `/${ourRoute.join("/")}`,
+        });
+
+        toast.success(`${file.name} uploaded`);
+      } catch (err) {
+        toast.error(`Error uploading ${file.name}`);
+        console.error(err);
+      }
+    }
+
+    setSelectedFiles([]);
+    router.refresh();
+  };
   if (isFolder.value === "folder") {
     return (
       <div className="mt-4">
@@ -162,21 +146,31 @@ export default function FileFolderAdder({
               Upload File
             </span>
             <input
+              multiple
               type="file"
               name="file"
               accept="image/jpeg, image/png, application/pdf, image/gif, video/mp4, video/webm"
               className="hidden"
-              onChange={handleFileChange}
+              onChange={(e) => {
+                const files = e.target.files;
+                if (!files) return;
+                setSelectedFiles(Array.from(files));
+              }}
             />
           </label>
-          {selectedFile && (
+          {/* Need to this forms multiple file thing */}
+          {selectedFiles.length > 0 && (
             <div className="mt-2 text-sm text-gray-600">
-              <p>File Name: {selectedFile.name}</p>
-              <p>File Size: {(selectedFile.size / 1024).toFixed(2)} KB</p>
-              <p>File Type: {selectedFile.type || "Unknown"}</p>
+              {selectedFiles.map((file, index) => (
+                <div key={index} className="mb-2">
+                  <p>File Name: {file.name}</p>
+                  <p>File Size: {(file.size / 1024).toFixed(2)} KB</p>
+                  <p>File Type: {file.type || "Unknown"}</p>
+                </div>
+              ))}
             </div>
           )}
-          <Button type="submit" disabled={!selectedFile}>
+          <Button type="submit" disabled={!selectedFiles}>
             Add {isFolder.label}
           </Button>
         </form>

@@ -29,10 +29,12 @@ export default function RelocateItem({
   itemId,
   type,
   parentId,
+  name,
 }: {
   itemId: number;
   type: string;
   parentId: number | null;
+  name: string;
 }) {
   const router = useRouter();
   const [rawFolders, setRawFolders] = useState<AllFolders[]>([]);
@@ -103,7 +105,7 @@ export default function RelocateItem({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Set A New Location</DialogTitle>
+          <DialogTitle>Set a new location for {name}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <ScrollArea className="h-72 w-96 rounded-md border">
