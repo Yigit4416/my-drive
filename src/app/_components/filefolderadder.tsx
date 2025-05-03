@@ -76,14 +76,14 @@ export default function FileFolderAdder({
       return;
     }
 
-    for (const file of selectedFiles) {
-      const computeSHA256 = async (file: File) => {
-        const buffer = await file.arrayBuffer();
-        const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-      };
+    const computeSHA256 = async (file: File) => {
+      const buffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    };
 
+    const uploadTasks = selectedFiles.map(async (file) => {
       const checksum = await computeSHA256(file);
 
       try {
@@ -104,7 +104,7 @@ export default function FileFolderAdder({
 
         if (!uploadResponse.ok) {
           toast.error(`Failed to upload ${file.name}`);
-          continue;
+          return;
         }
 
         await serverCreateFile({
@@ -120,7 +120,11 @@ export default function FileFolderAdder({
         toast.error(`Error uploading ${file.name}`);
         console.error(err);
       }
-    }
+    });
+
+    // Used this so if we have a fail it won't cancel all of the uploads
+    // If we used Promise.all if #3 fails it won't make 4 and others.
+    await Promise.allSettled(uploadTasks);
 
     setSelectedFiles([]);
     router.refresh();
