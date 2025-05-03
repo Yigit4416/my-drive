@@ -11,6 +11,7 @@ import {
 } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import FileFolderAdder from "./filefolderadder";
+import { Button } from "~/components/ui/button";
 
 type Status = {
   value: string;
@@ -40,9 +41,9 @@ export default function AddButton({ ...ourRoutes }) {
       <>
         <Dialog>
           <DialogTrigger asChild>
-            <button className="transform rounded-lg bg-gray-900 px-4 py-2 font-medium text-white shadow-md transition duration-200 ease-in-out hover:scale-105 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50">
+            <Button className="transform rounded-lg bg-gray-900 px-4 py-2 font-medium text-white shadow-md transition duration-200 ease-in-out hover:scale-105 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50">
               <Plus />
-            </button>
+            </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>

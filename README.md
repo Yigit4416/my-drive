@@ -32,6 +32,7 @@
 - [ ] look for how to show users pdf or excel files
 - [x] make sure that uploading will be at client side not on server
 - [ ] if elements on breadcrumb more than 4 show other elements in "..." dropdown element
+- [ ] make sure that all folder names are distinct so when you pull it there wont be any colision
 
 ## NOTES
 

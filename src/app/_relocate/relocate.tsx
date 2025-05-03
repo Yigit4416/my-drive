@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { applyDirChange, getFolders } from "./servertoclient";
 import {
@@ -13,7 +13,7 @@ import {
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 import { Button } from "~/components/ui/button";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type AllFolders = {
   id: number;
@@ -25,12 +25,22 @@ type AllFolders = {
   name: string;
 };
 
-export default function RelocateItem({ itemId }: { itemId: number }) {
+export default function RelocateItem({
+  itemId,
+  type,
+  parentId,
+}: {
+  itemId: number;
+  type: string;
+  parentId: number | null;
+}) {
+  const router = useRouter();
   const [rawFolders, setRawFolders] = useState<AllFolders[]>([]);
   const [currentFolderId, setCurrentFolderId] = useState<number>(4);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [folderToMove, setFolderToMove] = useState<number>(itemId);
-  const [openApply, setOpenApply] = useState(true);
+  const [isApplyDisabled, setIsApplyDisabled] = useState(true);
+  const [folderWillGoThere, setFolderWillGoThere] = useState<number>(4);
+  if (parentId === null) parentId = 4;
 
   useEffect(() => {
     const asyncFunc = async () => {
@@ -41,25 +51,27 @@ export default function RelocateItem({ itemId }: { itemId: number }) {
   }, []);
 
   useEffect(() => {
-    if (dialogOpen) setCurrentFolderId(4);
+    if (dialogOpen) setCurrentFolderId(itemId);
   }, [dialogOpen]);
 
   const filteredFolders = useMemo(() => {
-    return FoldersToShow({ allFolders: rawFolders, currentFolderId });
+    return foldersToShow({
+      allFolders: rawFolders,
+      currentFolderId: currentFolderId,
+      parentId: parentId,
+    });
   }, [rawFolders, currentFolderId]);
 
-  const folderSelector = (itemId: number) => {
-    setCurrentFolderId(itemId);
+  const handleFolderClick = (folderId: number) => {
+    setFolderWillGoThere(folderId);
+    setIsApplyDisabled(false);
   };
 
-  const itemMover = (movedId: number) => {
-    setFolderToMove(movedId);
-    setOpenApply(false);
+  const handleDoubleClick = (folderId: number) => {
+    setCurrentFolderId(folderId);
+    setFolderWillGoThere(folderId);
+    setIsApplyDisabled(false);
   };
-
-  useEffect(() => {
-    toast.error(folderToMove);
-  }, [folderToMove, openApply]);
 
   const moveItem = async ({
     newRouteId,
@@ -70,13 +82,15 @@ export default function RelocateItem({ itemId }: { itemId: number }) {
   }) => {
     try {
       const result = await applyDirChange({
-        itemId: folderToMove,
-        newRouteId: newRouteId,
-        type: type,
+        itemId,
+        newRouteId,
+        type,
       });
       console.info(result);
+      router.refresh();
+      setDialogOpen(false);
     } catch (error) {
-      console.info(error);
+      console.error(error);
     }
   };
 
@@ -94,32 +108,34 @@ export default function RelocateItem({ itemId }: { itemId: number }) {
         <div className="grid gap-4 py-4">
           <ScrollArea className="h-72 w-96 rounded-md border">
             <div className="p-4">
-              {filteredFolders.map((item) => (
-                <div key={item.id}>
-                  <Button
-                    variant="link"
-                    className="flex w-full hover:bg-slate-300 focus:bg-gray-400"
-                    onMouseDown={() => itemMover(item.id)}
-                  >
-                    <div onMouseDown={() => folderSelector(item.id)}>
+              <Suspense fallback={<div>Loading...</div>}>
+                {filteredFolders.map((item) => (
+                  <div key={item.id}>
+                    <Button
+                      variant="link"
+                      className="flex w-full hover:bg-slate-300 focus:bg-gray-400"
+                      onMouseDown={() => handleFolderClick(item.id)}
+                      onDoubleClick={() => handleDoubleClick(item.id)}
+                    >
                       {item.name}
-                    </div>
-                  </Button>
-                  <Separator className="my-4" />
-                </div>
-              ))}
+                    </Button>
+                    <Separator className="my-4" />
+                  </div>
+                ))}
+              </Suspense>
             </div>
           </ScrollArea>
         </div>
         <DialogFooter>
-          <Button variant={"destructive"}>Cancel</Button>
+          <Button variant="destructive" onClick={() => setDialogOpen(false)}>
+            Cancel
+          </Button>
           <Button
-            variant={"secondary"}
+            variant="secondary"
             onMouseDown={() =>
-              // check this out later again (type has problem)
-              moveItem({ newRouteId: folderToMove, type: "folder" })
+              moveItem({ newRouteId: folderWillGoThere, type })
             }
-            disabled={openApply}
+            disabled={isApplyDisabled}
           >
             Apply
           </Button>
@@ -129,17 +145,16 @@ export default function RelocateItem({ itemId }: { itemId: number }) {
   );
 }
 
-function FoldersToShow({
+function foldersToShow({
   allFolders,
   currentFolderId,
+  parentId,
 }: {
   allFolders: AllFolders[];
   currentFolderId: number;
+  parentId: number;
 }) {
-  console.log(currentFolderId);
-  console.log(allFolders);
-  console.log(
-    allFolders.filter((folder) => folder.parentId == currentFolderId),
+  return allFolders.filter(
+    (folder) => folder.parentId === parentId && folder.id !== currentFolderId,
   );
-  return allFolders.filter((folder) => folder.parentId == currentFolderId);
 }

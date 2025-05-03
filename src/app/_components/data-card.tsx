@@ -22,6 +22,7 @@ export default async function DataCard({
   name,
   type,
   route,
+  parentId,
   size,
 }: {
   itemId: number;
@@ -29,6 +30,7 @@ export default async function DataCard({
   type: string;
   route: string;
   size: number;
+  parentId: number | null;
 }) {
   return (
     <>
@@ -62,7 +64,7 @@ export default async function DataCard({
           </ContextMenuItem>
           <ContextMenuItem asChild>
             <Suspense fallback={<div>Loading...</div>}>
-              <RelocateItem itemId={itemId} />
+              <RelocateItem itemId={itemId} type={type} parentId={parentId} />
             </Suspense>
           </ContextMenuItem>
           <ContextMenuItem asChild>

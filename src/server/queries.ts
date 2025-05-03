@@ -279,13 +279,35 @@ export async function relocateFunc({
   if (!user.userId) throw new Error("Unauthorized");
 
   if (type === "folder") {
-    const result = await db
-      .update(folders)
-      .set({
-        parentId: newRouteId,
-      })
-      .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
-      .returning();
-    return result;
+    try {
+      const result = await db
+        .update(folders)
+        .set({
+          parentId: newRouteId,
+        })
+        .where(and(eq(folders.id, itemId), eq(folders.userId, user.userId)))
+        .returning();
+      console.info(result);
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw new Error(error as string);
+    }
+  } else {
+    try {
+      const result = await db
+        .update(files)
+        .set({
+          folderId: newRouteId,
+        })
+        .where(and(eq(files.id, itemId), eq(files.userId, user.userId)))
+        .returning();
+      console.info(result);
+      console.info(result);
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw new Error(error as string);
+    }
   }
 }

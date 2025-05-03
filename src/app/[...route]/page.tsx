@@ -1,4 +1,5 @@
 "use server";
+
 import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import DataCard from "~/app/_components/data-card";
@@ -9,7 +10,7 @@ import {
 } from "~/server/queries";
 import SkeletonCard from "../loading";
 
-async function OurList({
+async function OurListContent({
   route,
   routeList,
 }: {
@@ -21,42 +22,44 @@ async function OurList({
   if (!user.userId) {
     return <div>GO LOGIN YOU BASTARD</div>;
   }
-  const routeLength = routeList.length;
-  const latestRoute = routeList[routeLength - 1];
-  if (latestRoute === undefined || latestRoute === "") {
-    const parentFolderId = await getFolderIdWithRoute({
-      route: "root",
-      userId: user.userId,
-    });
-    const childFolders = await getChildFolders(parentFolderId.id);
-    return childFolders.map((item) => (
-      <DataCard
-        itemId={item.id}
-        name={item.name}
-        route={item.route}
-        type={item.type}
-        size={item.size}
-        key={item.id}
-      />
-    ));
-  }
+
+  const latestRoute = routeList.at(-1);
+  const currentRoute =
+    latestRoute === undefined || latestRoute === "" ? "root" : normalizedRoute;
+
   const parentFolderId = await getFolderIdWithRoute({
-    route: normalizedRoute,
+    route: currentRoute,
     userId: user.userId,
   });
+
   const childFolders = await getChildFolders(parentFolderId.id);
   const childFiles = await getFiles(parentFolderId.id);
-  const allItems = [...childFiles, ...childFolders];
-  return allItems.map((item) => (
-    <DataCard
-      itemId={item.id}
-      name={item.name}
-      route={item.route}
-      type={item.type}
-      size={item.size}
-      key={item.id}
-    />
-  ));
+  const normalizedChildFiles = childFiles.map((item) => ({
+    id: item.id,
+    name: item.name,
+    route: item.route,
+    type: item.type,
+    size: item.size,
+    parentId: item.folderId,
+    userId: item.userId,
+  }));
+  const allItems = [...childFolders, ...normalizedChildFiles];
+
+  return (
+    <>
+      {allItems.map((item) => (
+        <DataCard
+          key={item.id}
+          itemId={item.id}
+          name={item.name}
+          route={item.route}
+          type={item.type}
+          size={item.size}
+          parentId={item.parentId}
+        />
+      ))}
+    </>
+  );
 }
 
 export default async function PhotoPage({
@@ -65,21 +68,14 @@ export default async function PhotoPage({
   params: Promise<{ route: string[] }>;
 }) {
   const param = await params;
-  // Handle the root route case (/folder)
-  if (!param.route) {
-    return (
-      <div className="mt-20 flex flex-wrap justify-center gap-4">
-        <OurList route="/root" routeList={["root"]} />
-      </div>
-    );
-  }
-
-  const routePath = param.route.join("/");
+  const routeList = param.route ?? ["root"];
+  const routePath = routeList.join("/");
 
   return (
     <div className="mt-20 flex flex-wrap justify-center gap-4">
       <Suspense fallback={<SkeletonCard />}>
-        <OurList route={routePath} routeList={param.route} />
+        {/* await etmemiz gerekiyor çünkü OurListContent async */}
+        {await OurListContent({ route: routePath, routeList })}
       </Suspense>
     </div>
   );

@@ -26,9 +26,7 @@ export function NavBar() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <Link href="/">
-              <BreadcrumbLink>Home</BreadcrumbLink>
-            </Link>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
 
           {pathSegments.map((segment, index) => {
@@ -37,9 +35,7 @@ export function NavBar() {
               <Fragment key={href}>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <Link href={href}>
-                    <BreadcrumbLink>{segment}</BreadcrumbLink>
-                  </Link>
+                  <BreadcrumbLink href={href}>{segment}</BreadcrumbLink>
                 </BreadcrumbItem>
               </Fragment>
             );
