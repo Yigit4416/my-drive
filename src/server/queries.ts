@@ -256,7 +256,7 @@ export async function getAllFolders() {
         parentId: 0,
         type: "folder",
         size: 0,
-        userId: "everyone",
+        userId: "foreveryone",
       },
     ];
     return data;

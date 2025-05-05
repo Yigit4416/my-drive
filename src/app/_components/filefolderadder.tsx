@@ -26,6 +26,7 @@ export default function FileFolderAdder({
   ourRoute: Array<string>;
 }) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false); // added new state
   const router = useRouter(); // Initialize the router
 
   if (isFolder === null) return null;
@@ -69,66 +70,62 @@ export default function FileFolderAdder({
     }
   };
 
+  const computeSHA256 = async (file: File) => {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  };
+
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedFiles.length) {
       toast.error("No files selected");
       return;
     }
-
-    const computeSHA256 = async (file: File) => {
-      const buffer = await file.arrayBuffer();
-      const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-    };
-
-    const uploadTasks = selectedFiles.map(async (file) => {
-      const checksum = await computeSHA256(file);
-
-      try {
-        const signedUrlResult = await generateSignedUrl({
-          contentType: file.type,
-          size: file.size,
-          checksum,
-        });
-
-        toast.info(`Uploading ${file.name}...`);
-        const uploadResponse = await fetch(signedUrlResult.success.url, {
-          method: "PUT",
-          body: file,
-          headers: {
-            "Content-Type": file.type,
-          },
-        });
-
-        if (!uploadResponse.ok) {
-          toast.error(`Failed to upload ${file.name}`);
-          return;
+    setIsUploading(true); // disable button during upload
+    try {
+      console.info("Selected files:", selectedFiles);
+      for (const file of selectedFiles) {
+        const checksum = await computeSHA256(file);
+        try {
+          const signedUrlResult = await generateSignedUrl({
+            contentType: file.type,
+            size: file.size,
+            checksum,
+          });
+          toast.info(`Uploading ${file.name}...`);
+          const uploadResponse = await fetch(signedUrlResult.success.url, {
+            method: "PUT",
+            body: file,
+            headers: { "Content-Type": file.type },
+          });
+          if (!uploadResponse.ok) {
+            toast.error(`Failed to upload ${file.name}`);
+            console.error("Upload failed:", uploadResponse.statusText);
+            return;
+          }
+          const result = await serverCreateFile({
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            insiderName: signedUrlResult.success.fileName,
+            folder: `/${ourRoute.join("/")}`, // fixed interpolation
+          });
+          toast.success(`${file.name} uploaded`); // fixed interpolation
+          console.info("File created:", result);
+        } catch (err) {
+          toast.error(`Error uploading ${file.name}`); // fixed interpolation
+          console.error(err);
         }
-
-        await serverCreateFile({
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          insiderName: signedUrlResult.success.fileName,
-          folder: `/${ourRoute.join("/")}`,
-        });
-
-        toast.success(`${file.name} uploaded`);
-      } catch (err) {
-        toast.error(`Error uploading ${file.name}`);
-        console.error(err);
       }
-    });
-
-    // Used this so if we have a fail it won't cancel all of the uploads
-    // If we used Promise.all if #3 fails it won't make 4 and others.
-    await Promise.allSettled(uploadTasks);
-
-    setSelectedFiles([]);
-    router.refresh();
+      setSelectedFiles([]);
+      router.refresh();
+    } finally {
+      setIsUploading(false); // re-enable button
+    }
   };
+
   if (isFolder.value === "folder") {
     return (
       <div className="mt-4">
@@ -174,7 +171,10 @@ export default function FileFolderAdder({
               ))}
             </div>
           )}
-          <Button type="submit" disabled={!selectedFiles}>
+          <Button
+            type="submit"
+            disabled={selectedFiles.length === 0 || isUploading}
+          >
             Add {isFolder.label}
           </Button>
         </form>

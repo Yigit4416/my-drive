@@ -34,3 +34,4 @@
 - [x] make sure that uploading will be at client side not on server
 - [ ] if elements on breadcrumb more than 4 show other elements in "..." dropdown element
 - [ ] make sure that all folder names are distinct so when you pull it there wont be any colision
+- [ ] her bir kullanıcı eklendiğinde kendine ait bir dosya oluşturmasını sağlayalım root klasörü aynı noktada bulunmasın

@@ -56,10 +56,14 @@ export async function serverCreateFile({
       route: `https://${bucketName}.s3.${location}.amazonaws.com/${insiderName}`,
       size: size,
     });
-    console.info(insiderName);
+
+    if (!result) {
+      throw new Error("Failed to create file record");
+    }
+
     return result;
   } catch (error) {
-    console.error(error);
-    return;
+    console.error("File creation failed:", error);
+    throw error; // Re-throw instead of returning undefined
   }
 }
