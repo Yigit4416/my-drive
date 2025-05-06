@@ -39,10 +39,11 @@
 
 # yapılacak işlem:
 
-- [ ] ilk olarak api endpoint'lerin çalışabilmesi için [..route] yapısını baştan düzenleki api ile çakışmasın
-- [ ] [..route]'yi folder içerisine koy ve ana layout içerisindeki topnav'i oranın topnavi'ne at böylece yine api ile çakışmayı önlersin.
-- [ ] butonun yönlendirdiği yeri tekrar ayarlarsın.
-- [ ] yeni root dosyası yapma query'i yap
-- [ ] npm install -g localtunnel'i kullan böylece localhost üzerinde test yapabilirsin (webhook'u)
-- [ ] webhook'u oluştur ve query ile birleştir
+- [x] ilk olarak api endpoint'lerin çalışabilmesi için [..route] yapısını baştan düzenleki api ile çakışmasın
+- [x] [..route]'yi folder içerisine koy ve ana layout içerisindeki topnav'i oranın topnavi'ne at böylece yine api ile çakışmayı önlersin.
+- [x] butonun yönlendirdiği yeri tekrar ayarlarsın.
+- [x] yeni root dosyası yapma query'i yap
+- [x] npm install -g localtunnel'i kullan böylece localhost üzerinde test yapabilirsin (webhook'u)
+- [x] webhook'u oluştur ve query ile birleştir
+- [ ] pek çoğu yerde ilk dosyaya ulaşmak için id olarak 4 aranıyor ve biz bunu istemiyoruz bu yüzden gerekli ayarlamaları yap.
 - [ ] test et

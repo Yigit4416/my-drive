@@ -117,7 +117,6 @@ export async function getFolderIdWithRoute({
   userId: string;
 }) {
   console.info(route);
-  if (route === "/root") userId = "foreveryone";
   const result = await db.query.folders.findFirst({
     where: (model, { eq, and }) =>
       and(eq(model.route, route), eq(model.userId, userId)),
@@ -251,6 +250,8 @@ export async function getAllFolders() {
   const result = await db.query.folders.findMany({
     where: (model, { eq }) => eq(model.userId, user.userId),
   });
+
+  console.log(result);
 
   if (result === undefined || result === null) {
     const data = [
