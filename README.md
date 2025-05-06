@@ -34,4 +34,15 @@
 - [x] make sure that uploading will be at client side not on server
 - [ ] if elements on breadcrumb more than 4 show other elements in "..." dropdown element
 - [ ] make sure that all folder names are distinct so when you pull it there wont be any colision
-- [ ] her bir kullanıcı eklendiğinde kendine ait bir dosya oluşturmasını sağlayalım root klasörü aynı noktada bulunmasın
+- [ ] her bir kullanıcı eklendiğinde kendine ait bir dosya oluşturmasını sağlayalım root klasörü aynı noktada bulunmasın bunu webhook ile yapabilirsin
+- [ ] takrardan multiple upload'eyi async hale getir daha hızlı.
+
+# yapılacak işlem:
+
+- [ ] ilk olarak api endpoint'lerin çalışabilmesi için [..route] yapısını baştan düzenleki api ile çakışmasın
+- [ ] [..route]'yi folder içerisine koy ve ana layout içerisindeki topnav'i oranın topnavi'ne at böylece yine api ile çakışmayı önlersin.
+- [ ] butonun yönlendirdiği yeri tekrar ayarlarsın.
+- [ ] yeni root dosyası yapma query'i yap
+- [ ] npm install -g localtunnel'i kullan böylece localhost üzerinde test yapabilirsin (webhook'u)
+- [ ] webhook'u oluştur ve query ile birleştir
+- [ ] test et

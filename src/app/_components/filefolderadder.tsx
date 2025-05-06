@@ -9,7 +9,7 @@ import { UploadSVG } from "../_allSVG/svgfuncs";
 import {
   serverCreateFile,
   serverCreateFolder,
-} from "../[...route]/servertoclient";
+} from "../folder/[...route]/servertoclient";
 import { useRouter } from "next/navigation"; // Changed from next/router to next/navigation
 
 type Status = {

@@ -5,7 +5,6 @@ import { type Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import TopNav from "./_components/topnav";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "S3 Drive",
@@ -22,7 +21,7 @@ export default function RootLayout({
       <html lang="en" className={`${GeistSans.variable}`}>
         <body className="relative z-0">
           <div className="grid h-full grid-rows-[auto,1fr]">
-            <TopNav />
+            {/* <TopNav /> */}
             <main className="">{children}</main>
           </div>
         </body>

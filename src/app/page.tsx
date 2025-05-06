@@ -1,7 +1,7 @@
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
-import { SignedOut, SignedIn } from "@clerk/nextjs";
+import { SignedOut, SignedIn, SignIn } from "@clerk/nextjs";
 import { Suspense } from "react";
 
 export default function HomePage() {
@@ -10,12 +10,15 @@ export default function HomePage() {
       <Suspense fallback={<div>Please wait...</div>}>
         <SignedOut>
           <div className="text-center">pls sign in or create a new account</div>
+          <Button>
+            <SignIn />
+          </Button>
         </SignedOut>
         <SignedIn>
           <div>
             <Card>
               <Button>
-                <Link href={"/root"}>Go to Root File</Link>
+                <Link href={"/folder/root"}>Go to Root File</Link>
               </Button>
             </Card>
           </div>

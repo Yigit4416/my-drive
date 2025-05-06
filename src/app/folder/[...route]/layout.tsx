@@ -1,4 +1,5 @@
-import AddButton from "../_components/addbutton";
+import TopNav from "~/app/_components/topnav";
+import AddButton from "../../_components/addbutton";
 
 export default async function RouteLayout({
   children,
@@ -10,6 +11,7 @@ export default async function RouteLayout({
   const { route } = await params;
   return (
     <section className="relative h-full">
+      <TopNav />
       {children}
       <div className="fixed bottom-4 right-4 z-10">
         <AddButton ourRoutes={route} />

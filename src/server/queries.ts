@@ -4,6 +4,7 @@ import { files, folders } from "./db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { deleteFileItem, deleteMultipleFiles } from "./s3";
+import { NestedMiddlewareError } from "next/dist/build/utils";
 
 export async function getFolders(id: number) {
   //Make sure that userId is walid and check with queries
@@ -131,6 +132,10 @@ export async function getFileKey({ itemId }: { itemId: number }) {
   const result = await db.query.files.findFirst({
     where: (model, { eq, and }) =>
       and(eq(model.id, itemId), eq(model.userId, user.userId)),
+  });
+  console.log({
+    itemId,
+    user,
   });
   if (!result) throw new Error("Couldn't find file.");
   return result.route;
@@ -309,5 +314,28 @@ export async function relocateFunc({
       console.error(error);
       throw new Error(error as string);
     }
+  }
+}
+
+export async function folderForSignUp({ userId }: { userId: string }) {
+  function getRandomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  try {
+    const result = await db
+      .insert(folders)
+      .values({
+        name: "root",
+        route: "/root",
+        type: "folder",
+        userId: userId,
+        id: getRandomInt(100000, 999999),
+        parentId: 0,
+        size: 0,
+      })
+      .returning();
+    return result;
+  } catch (error) {
+    throw new Error(error as string);
   }
 }

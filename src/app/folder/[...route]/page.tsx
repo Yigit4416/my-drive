@@ -8,7 +8,7 @@ import {
   getFiles,
   getFolderIdWithRoute,
 } from "~/server/queries";
-import SkeletonCard from "../loading";
+import SkeletonCard from "../../loading";
 
 async function OurListContent({
   route,
