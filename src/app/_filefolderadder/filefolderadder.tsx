@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -11,6 +11,7 @@ import {
   serverCreateFolder,
 } from "../folder/[...route]/servertoclient";
 import { useRouter } from "next/navigation"; // Changed from next/router to next/navigation
+import { compareRoutes } from "./servertoclient";
 
 type Status = {
   value: string;
@@ -26,7 +27,26 @@ export default function FileFolderAdder({
   ourRoute: Array<string>;
 }) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [cantAdd, setCantAdd] = useState(true);
+  const [tempParentRoute, setParentRoute] = useState<string>("");
+  const [routesToCompare, setRoutesToCompare] = useState<string[]>();
+  const [routeToSaveState, setRouteToSaveState] = useState("");
   const router = useRouter(); // Initialize the router
+
+  useEffect(() => {
+    const compare = async () => {
+      const result = await compareRoutes(tempParentRoute);
+      setRoutesToCompare(result);
+    };
+    if (!cantAdd) {
+      compare();
+    }
+  }, [tempParentRoute]);
+
+  const compareRoutesFunc = () => {
+    if (routesToCompare?.includes(routeToSaveState)) return false;
+    else return true;
+  };
 
   if (isFolder === null) return null;
 
@@ -43,29 +63,37 @@ export default function FileFolderAdder({
     const sanitizedFolderName = sanitizeInput(folderName);
     const routeToSave = routeString + "/" + sanitizedFolderName;
     let parentRoute = ourRoute.at(-1);
-    if (parentRoute === undefined || parentRoute === "") parentRoute = "root";
-    try {
-      const result = await serverCreateFolder({
-        name: folderName,
-        route: routeToSave,
-        parentRoute: routeString,
-        type: "folder",
-      });
-      if (!result) {
-        toast.error("Something went wrong");
-        return;
+    if (parentRoute === undefined) parentRoute = "root";
+    setParentRoute(parentRoute);
+    setRouteToSaveState(routeToSave);
+    const willSave = compareRoutesFunc();
+    if (willSave) {
+      if (parentRoute === undefined || parentRoute === "") parentRoute = "root";
+      try {
+        const result = await serverCreateFolder({
+          name: folderName,
+          route: routeToSave,
+          parentRoute: routeString,
+          type: "folder",
+        });
+        if (!result) {
+          toast.error("Something went wrong");
+          return;
+        }
+        toast.success("Folder added");
+
+        // Refresh the current page to show the new folder
+        router.refresh();
+
+        // Reset the form
+        inputElement.value = "";
+
+        return result;
+      } catch (error) {
+        console.error(error);
       }
-      toast.success("Folder added");
-
-      // Refresh the current page to show the new folder
-      router.refresh();
-
-      // Reset the form
-      inputElement.value = "";
-
-      return result;
-    } catch (error) {
-      console.error(error);
+    } else {
+      toast.error("Please selelct a different name");
     }
   };
 

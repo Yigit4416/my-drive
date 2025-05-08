@@ -2,6 +2,7 @@
 
 import {
   Breadcrumb,
+  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
@@ -10,7 +11,12 @@ import {
 
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
-import Link from "next/link";
+import { Slash } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 
 export function NavBar() {
   const pathname = usePathname();
@@ -18,7 +24,9 @@ export function NavBar() {
 
   // Only update path segments after initial render to ensure client/server match
   useEffect(() => {
-    setPathSegments(pathname.split("/").filter((segment) => segment));
+    const segments = pathname.split("/").filter(Boolean);
+    const relevantPart = segments.slice(1).join("/");
+    setPathSegments(relevantPart.split("/").filter(Boolean));
   }, [pathname]);
 
   return (
@@ -28,14 +36,17 @@ export function NavBar() {
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
-
           {pathSegments.map((segment, index) => {
             const href = "/" + pathSegments.slice(0, index + 1).join("/");
             return (
               <Fragment key={href}>
-                <BreadcrumbSeparator />
+                <BreadcrumbSeparator>
+                  <Slash />
+                </BreadcrumbSeparator>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={href}>{segment}</BreadcrumbLink>
+                  <BreadcrumbLink href={"/folder" + href}>
+                    {segment}
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
               </Fragment>
             );
@@ -44,4 +55,19 @@ export function NavBar() {
       </Breadcrumb>
     </div>
   );
+}
+
+function LongBreadcrumb(pathSegments: string[]) {
+  const lenght = pathSegments.length;
+  pathSegments.map((segment, index) => {
+    const href = "/" + pathSegments.slice(0, index + 1).join("/");
+    if (index !== lenght - 2) {
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <BreadcrumbEllipsis className="h-4 w-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuItem>{segment}</DropdownMenuItem>
+      </DropdownMenu>;
+    }
+  });
 }

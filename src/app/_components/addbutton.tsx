@@ -10,8 +10,8 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import FileFolderAdder from "./filefolderadder";
 import { Button } from "~/components/ui/button";
+import FileFolderAdder from "../_filefolderadder/filefolderadder";
 
 type Status = {
   value: string;

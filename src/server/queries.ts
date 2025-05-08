@@ -125,6 +125,18 @@ export async function getFolderIdWithRoute({
   return result;
 }
 
+export async function getChildFoldersWithRoute({ route }: { route: string }) {
+  const user = await auth();
+  if (!user.userId) throw new Error("Unauthhorized");
+  const result = await db.query.folders.findMany({
+    where: (model, { and, eq }) =>
+      and(eq(model.userId, user.userId), eq(model.route, route)),
+  });
+
+  if (!result) throw new Error("Couldn't find file.");
+  return result.map((folder) => folder.route); // Extract only the route parameter
+}
+
 export async function getFileKey({ itemId }: { itemId: number }) {
   const user = await auth();
   if (!user.userId) throw new Error("Unauthhorized");
