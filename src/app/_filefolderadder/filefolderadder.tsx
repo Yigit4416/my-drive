@@ -80,8 +80,12 @@ export default function FileFolderAdder({
           toast.error("Something went wrong");
           return;
         }
-        toast.success("Folder added");
-
+        // @ts-ignore
+        if (result.error === "uniquie_id_routes") {
+          toast.error("Select a different folder name pls");
+        } else {
+          toast.success("Folder added");
+        }
         // Refresh the current page to show the new folder
         router.refresh();
 
@@ -92,8 +96,6 @@ export default function FileFolderAdder({
       } catch (error) {
         console.error(error);
       }
-    } else {
-      toast.error("Please selelct a different name");
     }
   };
 

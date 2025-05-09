@@ -26,6 +26,9 @@ export async function serverCreateFolder({
     });
     return result;
   } catch (error) {
+    // @ts-ignore
+    if (error.constraint_name === "uniquie_id_routes")
+      return { error: "uniquie_id_routes" };
     console.error(error);
     return;
   }

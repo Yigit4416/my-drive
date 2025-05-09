@@ -33,7 +33,7 @@
 - [ ] look for how to show users pdf or excel files
 - [x] make sure that uploading will be at client side not on server
 - [x] usa a different breadcrumb.
-- [ ] make sure that all folder names are distinct so when you pull it there wont be any colision
+- [x] make sure that all folder names (it should be in the same folder) are distinct so when you pull it there wont be any colision
 - [x] her bir kullanıcı eklendiğinde kendine ait bir dosya oluşturmasını sağlayalım root klasörü aynı noktada bulunmasın bunu webhook ile yapabilirsin
 - [x] tekrardan multiple upload'eyi async hale getir daha hızlı.
-- [ ] breadcrumb'da başlangıçtaki route'yi kaldır
+- [x] breadcrumb'da başlangıçtaki route'yi kaldır

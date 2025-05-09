@@ -7,8 +7,10 @@ import {
   pgTableCreator,
   serial,
   text,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
+import { unique } from "next/dist/build/utils";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -34,6 +36,10 @@ export const folders = createTable(
       userIdIndex: index("folders_user_id_ndx").on(table.userId),
       idIndex: index("folders_id_idx").on(table.id),
       parentIdIndex: index("folders_parent_id_idx").on(table.parentId),
+      uniqueIdRoutes: uniqueIndex("uniquie_id_routes").on(
+        table.userId,
+        table.route,
+      ),
     };
   },
 );
