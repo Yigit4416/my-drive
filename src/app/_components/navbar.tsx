@@ -58,7 +58,7 @@ function LongBreadcrumb({ pathSegments }: { pathSegments: string[] }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="rounded-md bg-white p-2 shadow-md">
             {dropdownContent.map((drop, index) => {
-              const href = "/" + pathSegments.slice(0, index + 2).join("/");
+              const href = "/" + pathSegments.slice(0, index + 1).join("/");
               return (
                 <Link href={"/folder" + href} prefetch={true}>
                   <DropdownMenuItem
