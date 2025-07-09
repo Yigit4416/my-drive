@@ -20,7 +20,7 @@ async function OurListContent({
   const normalizedRoute = route.startsWith("/") ? route : `/${route}`;
   const user = await auth();
   if (!user.userId) {
-    return <div>GO LOGIN YOU BASTARD</div>;
+    return <div>PLS LOGIN</div>;
   }
 
   const latestRoute = routeList.at(-1);
